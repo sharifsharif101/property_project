@@ -9,10 +9,9 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">قائمة العقارات</h3>
-        </div><!-- /.box-header -->
+        </div>
         <div class="box-body">
-   <table id="example2" class="table table-bordered table-hover">
-
+          <table id="example2" class="table table-bordered table-hover">
             <thead>
               <tr>
                 <th>#</th>
@@ -70,11 +69,9 @@
               @endforelse
             </tbody>
           </table>
-        </div><!-- /.box-body -->
-      </div><!-- /.box -->
-    </div><!-- /.col -->
-  </div><!-- /.row -->
-</section><!-- /.content -->
- 
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 @endsection
- 

@@ -1,31 +1,19 @@
 @extends('layouts.app')
 
+@section('title', 'عرض العقارات')
+
 @section('content')
-    @if (session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 1000)" x-show="show" x-transition
-            class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">نجاح!</strong>
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
-            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">خطأ!</strong>
-            <ul class="mt-2 list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+<section class="content">
 
 
-    <div class="max-w-2xl mx-auto mt-10  ">
-        <div class="bg-white shadow-md rounded-2xl p-6 mt-10">
-            <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">إضافة عقار جديد</h2>
-            <form action="{{ route('properties.store') }}" method="POST" class="space-y-4 mt-10">
+<div class="w-4/5 mx-auto p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+
+    <div class="row">
+    <div class="col-xs-12">
+ 
+    
+        <div class="box-body">
+          <form action="{{ route('properties.store') }}" method="POST" class="w-4/5 mx-auto">
                 @csrf
 
                 <!-- اسم العقار -->
@@ -75,14 +63,19 @@
                 </div>
 
                 <!-- زر الحفظ -->
-                <div class="text-center pt-4">
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl transition duration-300">
-                        حفظ العقار
-                    </button>
-                </div>
-            </form>
+               <div class="text-center pt-4">
+ 
+ 
+       <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"    style="color: white !important;">حفظ العقار</button>
 
+</div>
+
+            </form>
         </div>
+   
     </div>
+  </div>
+</div>
+
+</section>
 @endsection
