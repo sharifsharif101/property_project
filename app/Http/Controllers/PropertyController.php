@@ -7,6 +7,13 @@ use App\Models\Property; // ← هذا هو السطر المطلوب
 
 class PropertyController extends Controller
 {
+
+ public function index()
+    {
+        $properties = Property::all(); // جلب كل البيانات
+        return view('properties.index', compact('properties'));
+    }
+
   public function create()
     {
         return view('properties.create');

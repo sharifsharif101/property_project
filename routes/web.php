@@ -11,6 +11,9 @@ Route::get('/h', function () {
     return view('home');
 });
 
+
+Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
+
 Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
 Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
 Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
