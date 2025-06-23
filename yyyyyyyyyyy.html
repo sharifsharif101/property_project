@@ -1,0 +1,44 @@
+
+//كرد اضافة الاشياء
+<form action="{{ route('properties.store') }}" method="POST">
+    @csrf
+
+    <!-- اسم العقار -->
+    <div>
+        <label for="name">اسم العقار</label>
+        <input type="text" name="name" id="name" value="{{ old('name') }}" required>
+    </div>
+
+    <!-- العنوان -->
+    <div>
+        <label for="address">العنوان</label>
+        <input type="text" name="address" id="address" value="{{ old('address') }}" required>
+    </div>
+
+    <!-- النوع -->
+    <div>
+        <label for="type">نوع العقار</label>
+        <select name="type" id="type" required>
+            <option value="">اختر النوع</option>
+            <option value="big_house" {{ old('type') == 'big_house' ? 'selected' : '' }}>بيت كبير</option>
+            <option value="building" {{ old('type') == 'building' ? 'selected' : '' }}>عمارة</option>
+            <option value="villa" {{ old('type') == 'villa' ? 'selected' : '' }}>فلة</option>
+        </select>
+    </div>
+
+    <!-- الحالة -->
+    <div>
+        <label for="status">الحالة</label>
+        <select name="status" id="status" required>
+            <option value="">اختر الحالة</option>
+            <option value="available" {{ old('status') == 'available' ? 'selected' : '' }}>متاح</option>
+            <option value="rented" {{ old('status') == 'rented' ? 'selected' : '' }}>مؤجر</option>
+            <option value="under_maintenance" {{ old('status') == 'under_maintenance' ? 'selected' : '' }}>تحت الصيانة</option>
+        </select>
+    </div>
+
+    <!-- زر الحفظ -->
+    <div>
+        <button type="submit">حفظ العقار</button>
+    </div>
+</form>
