@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+{{ Breadcrumbs::render('properties.show', $property) }}
+
 <div class="container mx-auto px-4 py-8 max-w-4xl">
   <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
     <h3 class="text-[36px] font-semibold text-gray-800 mb-10 text-right leading-snug">

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+{{ Breadcrumbs::render('properties.edit', $property) }}
     @if (session('success'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 2000)" x-show="show" x-transition
             class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">

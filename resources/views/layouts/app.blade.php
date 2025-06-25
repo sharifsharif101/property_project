@@ -40,10 +40,14 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
+
+
+
         @include('layouts.nav')
         @include('layouts.sidebar')
         
         <div class="content-wrapper">
+ 
             @yield('content')
         </div>
     </div>

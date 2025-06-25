@@ -8,13 +8,13 @@ use App\Models\Property; // ← هذا هو السطر المطلوب
 class PropertyController extends Controller
 {
 
- public function index()
+    public function index()
     {
         $properties = Property::all(); // جلب كل البيانات
         return view('properties.index', compact('properties'));
     }
 
-  public function create()
+    public function create()
     {
         return view('properties.create');
     }
@@ -36,9 +36,9 @@ class PropertyController extends Controller
 
     public function edit(Property $property)
     {
-         return view('properties.edit', compact('property'));
+        return view('properties.edit', compact('property'));
     }
-public function update(Request $request, Property $property)
+    public function update(Request $request, Property $property)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -49,7 +49,8 @@ public function update(Request $request, Property $property)
 
         $property->update($validated);
 
-        return redirect()->route('properties.edit', $property)->with('success', 'تم تحديث بيانات العقار بنجاح.');
+      return redirect()->route('properties.index')
+    ->with('success', 'تم تحديث بيانات العقار بنجاح.');
     }
 
 
@@ -58,5 +59,14 @@ public function update(Request $request, Property $property)
         $property = Property::findOrFail($property_id);
 
         return view('properties.show', compact('property'));
+    }
+
+    public function destroy($id)
+    {
+        $property = Property::findOrFail($id);
+        $property->delete();
+
+        return redirect()->route('properties.index')
+            ->with('success', 'تم حذف العقار بنجاح.');
     }
 }
