@@ -51,4 +51,12 @@ public function update(Request $request, Property $property)
 
         return redirect()->route('properties.edit', $property)->with('success', 'تم تحديث بيانات العقار بنجاح.');
     }
+
+
+    public function show($property_id)
+    {
+        $property = Property::findOrFail($property_id);
+
+        return view('properties.show', compact('property'));
+    }
 }
