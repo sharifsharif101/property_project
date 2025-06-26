@@ -5,7 +5,7 @@ use Diglactic\Breadcrumbs\Generator as Trail;
 
 // الرئيسية (الرئيسية توجه للعقارات مباشرة حسب راوت properties.index)
 Breadcrumbs::for('home', function (Trail $trail) {
-    $trail->push('الرئيسية', route('properties.index'));
+    $trail->push('الرئيسية', route('home'));
 });
 
 // الرئيسية > العقارات (صفحة القائمة)
