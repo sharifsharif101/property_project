@@ -39,8 +39,8 @@
                 required>
                 <option value="">اختر عقاراً</option>
                 @foreach($properties as $property)
-<option value="{{ $property->id }}" {{ old('property_id') == $property->property_id ? 'selected' : '' }}>
-                        {{ $property->name ?? 'عقار #' . $property->id }}
+<option value="{{ $property->property_id }}" {{ old('property_id') == $property->property_id ? 'selected' : '' }}>
+                        {{ $property->name ?? 'عقار #' . $property->property_id }}
                     </option>
                 @endforeach
             </select>

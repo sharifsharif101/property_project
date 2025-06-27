@@ -34,6 +34,35 @@
             </a>
           </li>
         </ul>
+        <div class=" mt-7"> </div>
+       </li class="mt-5" >
+        <li x-data="{ open: false }" class="border rounded-md mt-5">
+        <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none">
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <i class="fa fa-edit"></i>
+            <span class="font-medium"> الشقق | الوحدات </span>
+          </div>
+          <svg :class="{ 'transform rotate-90': open }" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+      <ul x-show="open" x-transition class="pl-8 mt-2 space-y-2 text-gray-700">
+  <!-- All Units -->
+  <li>
+    <a href="{{ route('units.index') }}" class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-[#C78A3B] hover:text-white transition duration-200">
+      جميع الوحدات
+    </a>
+  </li>
+
+  <!-- Add New Unit -->
+  <li>
+    <a href="{{ route('units.create') }}" class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-[#C78A3B] hover:text-white transition duration-200">
+      إضافة وحدة جديدة
+    </a>
+  </li>
+</ul>
+        
       </li>
     </ul>
   </section>
