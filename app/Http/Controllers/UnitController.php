@@ -9,6 +9,21 @@ use Illuminate\Http\Request;
 class UnitController extends Controller
 {
  
+public function bulkDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
+
+    if (!is_array($ids) || empty($ids)) {
+        return response()->json(['error' => 'لم يتم تحديد وحدات للحذف.'], 400);
+    }
+
+    try {
+        \App\Models\Unit::whereIn('id', $ids)->delete();
+        return response()->json(['success' => 'تم حذف الوحدات المحددة بنجاح.']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'فشل في الحذف.'], 500);
+    }
+}
 
 
 public function updateField(Request $request, Unit $unit)

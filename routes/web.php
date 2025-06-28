@@ -37,5 +37,7 @@ Route::get('/units/create', [UnitController::class, 'create'])->name('units.crea
 Route::post('/units', [UnitController::class, 'store'])->name('units.store');
 Route::get('/units', [UnitController::class, 'index'])->name('units.index');
 Route::patch('/units/{unit}/update-field', [UnitController::class, 'updateField'])->name('units.updateField');
+Route::delete('/units/bulk-delete', [UnitController::class, 'bulkDelete']);
+
 
  
