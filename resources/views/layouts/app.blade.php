@@ -112,6 +112,7 @@
             });
         });
     </script>
+    
 
     <!-- AdminLTE dashboard demo -->
     <script src="{{ asset('adminlte/js/pages/dashboard.js') }}"></script>
