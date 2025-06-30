@@ -2,31 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
- 
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Image\Enums\Fit;
-
 
 class Tenant extends Model implements HasMedia
 {
-     use InteractsWithMedia;
+    use HasFactory, InteractsWithMedia;
 
-
-    /**
-     * اسم الجدول المرتبط بالموديل (اختياري إذا الاسم مطابق).
-     */
-    protected $table = 'tenants';
-
-    /**
-     * الحقول القابلة للتعبئة بالجملة.
-     */
     protected $fillable = [
         'first_name',
-        'father_name',
         'last_name',
+        'father_name',
         'phone',
         'alternate_phone',
         'email',
@@ -43,27 +32,32 @@ class Tenant extends Model implements HasMedia
         'status',
     ];
 
-    /**
-     * الحقول التي يجب تحويلها تلقائيًا لأنواع معينة.
-     */
     protected $casts = [
-        'id_verified' => 'boolean',
         'id_expiry_date' => 'date',
+        'id_verified' => 'boolean',
         'monthly_income' => 'decimal:2',
     ];
 
-        public function registerMediaCollections(): void
+    // تكوين Media Collections
+    public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('tenant_images')->useDisk('public');
-    }
- 
- public function registerMediaConversions(Media $media = null): void
-    {
-        $this->addMediaConversion('thumb')
-            ->width(100)
-            ->height(100)
-            ->sharpen(10)
-            ->nonQueued(); // لتوليد الصورة المصغرة مباشرة بدون queue
+        $this->addMediaCollection('tenant_images')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
+            ->singleFile(); // صورة واحدة فقط
     }
 
+    // تكوين Media Conversions للصور المصغرة
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10)
+            ->performOnCollections('tenant_images');
+
+        $this->addMediaConversion('medium')
+            ->width(300)
+            ->height(300)
+            ->performOnCollections('tenant_images');
+    }
 }
