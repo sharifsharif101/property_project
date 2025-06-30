@@ -147,6 +147,7 @@
                                 <label class="file-upload-label">
                                     <span class="file-upload-text">اختر ملف</span>
                                     <input type="file" name="tenant_image" id="tenant_image" class="file-upload-input" accept="image/*">
+                                    
                                 </label>
                             </div>
                             <div id="image-preview-container" class="image-preview-container" style="display: none;">

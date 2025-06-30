@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-
-class Tenant extends Model implements HasMedia
+ 
+use Illuminate\Support\Facades\Storage;
+ 
+class Tenant extends Model
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory;
 
     protected $fillable = [
         'first_name',
@@ -30,6 +32,7 @@ class Tenant extends Model implements HasMedia
         'notes',
         'tenant_type',
         'status',
+        'image_path', // حقل جديد لحفظ مسار الصورة
     ];
 
     protected $casts = [
@@ -38,26 +41,26 @@ class Tenant extends Model implements HasMedia
         'monthly_income' => 'decimal:2',
     ];
 
-    // تكوين Media Collections
-    public function registerMediaCollections(): void
+    // الحصول على رابط الصورة
+    public function getImageUrlAttribute()
     {
-        $this->addMediaCollection('tenant_images')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-            ->singleFile(); // صورة واحدة فقط
+        if ($this->image_path && Storage::disk('public')->exists($this->image_path)) {
+            return Storage::disk('public')->url($this->image_path);
+        }
+        return null;
     }
 
-    // تكوين Media Conversions للصور المصغرة
-    public function registerMediaConversions(Media $media = null): void
+    // التحقق من وجود صورة
+    public function hasImage()
     {
-        $this->addMediaConversion('thumb')
-            ->width(150)
-            ->height(150)
-            ->sharpen(10)
-            ->performOnCollections('tenant_images');
+        return $this->image_path && Storage::disk('public')->exists($this->image_path);
+    }
 
-        $this->addMediaConversion('medium')
-            ->width(300)
-            ->height(300)
-            ->performOnCollections('tenant_images');
+    // حذف الصورة القديمة
+    public function deleteOldImage()
+    {
+        if ($this->image_path && Storage::disk('public')->exists($this->image_path)) {
+            Storage::disk('public')->delete($this->image_path);
+        }
     }
 }

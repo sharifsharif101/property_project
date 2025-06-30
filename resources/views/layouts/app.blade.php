@@ -103,7 +103,7 @@
 
     <script>
         $(function () {
-            $('.example2').DataTable({
+            $('#example2').DataTable({
                 paging: true,
                 lengthChange: false,
                 searching: false,
