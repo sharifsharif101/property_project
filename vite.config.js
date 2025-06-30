@@ -12,8 +12,10 @@ export default defineConfig({
         tailwindcss(),
     ],
 });
+//todo::
+//C: \Users\sharif\Desktop\property_project\property_project\resources\views\units\index.blade.php
+// في هذا المكان دداير اعمل شيك على الفالديشن بتاعت لارفل 
+// شوف الفالديشن حقت لارفل شيك عليها وشوف بيحصل شنو اذا ارتكبت هذا الخطأ
 
 
-
-//  2025_06_25_013225_create_units_table.php 
-// ابدأ من الفوق دا 
+ 

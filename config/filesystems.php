@@ -40,11 +40,11 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
+            'root' => storage_path('app/public'),  // مسار تخزين الملفات فعلياً
+            'url' => env('APP_URL') . '/storage',  // الرابط العام للوصول للملفات
+            'visibility' => 'public',               // لجعل الملفات متاحة للعرض عبر الإنترنت
+            'throw' => false,                       // في Laravel 10+ للتحكم في رمي الاستثناءات
+            'report' => false,                      // تحكم في الإبلاغ عن الأخطاء (نادر الاستخدام)
         ],
 
         's3' => [
