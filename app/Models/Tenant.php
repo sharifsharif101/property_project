@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
- 
-use Illuminate\Support\Facades\Storage;
+ use Illuminate\Support\Facades\Storage;
+
  
 class Tenant extends Model
 {
@@ -49,6 +49,7 @@ class Tenant extends Model
         }
         return null;
     }
+ 
 
     // التحقق من وجود صورة
     public function hasImage()
