@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'عنوان الصفحة')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <script src="//unpkg.com/alpinejs" defer></script>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="{{ asset('adminlte/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -39,7 +39,7 @@
 
 </head>
 
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-blue  ">
     <div class="wrapper">
 
 
