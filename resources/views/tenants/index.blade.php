@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('content')
-
 @if ($errors->any())
     <div class="error-message animate__animated animate__fadeIn">
         <ul class="list-disc list-inside text-red-600 text-sm">
@@ -13,7 +11,8 @@
 @endif
 
 <div class="tenants-container">
-    <div class="tenants-wrapper">
+    <di
+    v class="tenants-wrapper">
         <!-- Header Section -->
         <div class="tenants-header">
             <h1 class="tenants-title animate__animated animate__fadeInDown">قائمة المستأجرين</h1>
@@ -36,34 +35,15 @@
             </div>
         </div>
 
-        <!-- Success/Error Messages with Auto-Hide -->
+        <!-- Success/Error Messages -->
         @if(session('success'))
-            <div id="successMessage" class="success-message animate__animated animate__fadeIn">
-                <div class="message-content">
-                    <svg class="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>{{ session('success') }}</span>
-                </div>
-                <button class="close-message-btn" onclick="closeMessage('successMessage')">×</button>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
+            <div class="success-message animate__animated animate__fadeIn">
+                {{ session('success') }}
             </div>
         @endif
-
         @if(session('error'))
-            <div id="errorMessage" class="error-message animate__animated animate__fadeIn">
-                <div class="message-content">
-                    <svg class="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>{{ session('error') }}</span>
-                </div>
-                <button class="close-message-btn" onclick="closeMessage('errorMessage')">×</button>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
+            <div class="error-message animate__animated animate__fadeIn">
+                {{ session('error') }}
             </div>
         @endif
 
@@ -117,26 +97,14 @@
                                     <span class="status-badge terminated">منتهي</span>
                             @endswitch
                         </td>
-                        <td class="table-cell image-cell">
+                        <td class="table-cell">
                             @if($tenant->image_path)
-                                <div class="tenant-image-wrapper" onclick="showImageModal('{{ asset('storage/' . $tenant->image_path) }}')">
+                                <div class="tenant-image" onclick="showImageModal('{{ asset('storage/' . $tenant->image_path) }}')">
                                     <img src="{{ asset('storage/' . $tenant->image_path) }}" 
-                                        alt="هوية {{ $tenant->first_name }}" 
-                                        class="tenant-image-thumb animate__animated animate__zoomIn">
-                                    <div class="image-overlay">
-                                        <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </div>
+                                        alt="هوية {{ $tenant->first_name }}" class="animate__animated animate__zoomIn">
                                 </div>
                             @else
-                                <div class="no-image-placeholder">
-                                    <svg class="no-image-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span>لا توجد</span>
-                                </div>
+                                <span class="no-image">لا توجد</span>
                             @endif
                         </td>
                         <td class="table-cell actions-cell">
@@ -204,24 +172,11 @@
                     <p><strong>نوع الهوية:</strong> {{ $idTypes[$tenant->id_type] ?? 'غير معروف' }}</p>
                     <p><strong>الدخل:</strong> {{ $tenant->monthly_income ? number_format($tenant->monthly_income, 2) . ' ريال' : '-' }}</p>
                     @if($tenant->image_path)
-                        <div class="tenant-image-wrapper card-image" onclick="showImageModal('{{ asset('storage/' . $tenant->image_path) }}')">
-                            <img src="{{ asset('storage/' . $tenant->image_path) }}" 
-                                alt="هوية {{ $tenant->first_name }}" 
-                                class="tenant-image-thumb">
-                            <div class="image-overlay">
-                                <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </div>
+                        <div class="tenant-image" onclick="showImageModal('{{ asset('storage/' . $tenant->image_path) }}')">
+                            <img src="{{ asset('storage/' . $tenant->image_path) }}" alt="هوية {{ $tenant->first_name }}">
                         </div>
                     @else
-                        <div class="no-image-placeholder">
-                            <svg class="no-image-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>لا توجد صورة</span>
-                        </div>
+                        <span class="no-image">لا توجد صورة</span>
                     @endif
                 </div>
                 <div class="card-actions">
@@ -257,7 +212,7 @@
 <!-- Image Modal -->
 <div id="imageModal" class="image-modal">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <img id="modalImage" src="/placeholder.svg" alt="صورة الهوية" class="modal-image">
+        <img id="modalImage" src="" alt="صورة الهوية" class="modal-image">
         <button onclick="closeImageModal()" class="modal-close-btn">×</button>
         <button onclick="zoomImage(1.2)" class="modal-zoom-in">+</button>
         <button onclick="zoomImage(0.8)" class="modal-zoom-out">−</button>
@@ -279,7 +234,6 @@
         min-height: 100vh;
         direction: rtl;
     }
-
     .tenants-wrapper {
         max-width: 1280px;
         margin: 0 auto;
@@ -289,7 +243,6 @@
         background: #ffffff;
         padding: 40px;
     }
-
     .tenants-header {
         display: flex;
         justify-content: space-between;
@@ -298,7 +251,6 @@
         flex-wrap: wrap;
         gap: 16px;
     }
-
     .tenants-title {
         font-size: 36px;
         font-weight: 700;
@@ -309,20 +261,17 @@
         -webkit-text-fill-color: transparent;
         animation: gradientAnimation 5s ease infinite;
     }
-
     @keyframes gradientAnimation {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-
     .header-actions {
         display: flex;
         gap: 16px;
         align-items: center;
         flex-wrap: wrap;
     }
-
     .search-bar {
         padding: 12px 16px;
         border: 1px solid #d1d5db;
@@ -331,13 +280,11 @@
         width: 250px;
         transition: all 0.3s;
     }
-
     .search-bar:focus {
         outline: none;
         border-color: #6366f1;
         box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
     }
-
     .filter-select {
         padding: 12px 16px;
         border: 1px solid #d1d5db;
@@ -346,13 +293,11 @@
         background: #ffffff;
         transition: all 0.3s;
     }
-
     .filter-select:focus {
         outline: none;
         border-color: #6366f1;
         box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
     }
-
     .toggle-view-btn {
         background: #e0e7ff;
         border: none;
@@ -361,18 +306,15 @@
         cursor: pointer;
         transition: all 0.3s;
     }
-
     .toggle-view-btn:hover {
         background: #c7d2fe;
         transform: translateY(-2px);
     }
-
     .toggle-icon {
         width: 24px;
         height: 24px;
         color: #4f46e5;
     }
-
     .add-tenant-btn {
         background: linear-gradient(135deg, #7c3aed, #db2777);
         color: white;
@@ -386,107 +328,36 @@
         gap: 10px;
         transition: all 0.3s;
     }
-
     .add-tenant-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 15px 30px rgba(124, 58, 237, 0.4);
     }
-
     .add-tenant-btn span {
         font-size: 24px;
     }
-
-    /* Enhanced Message Styles with Auto-Hide */
-    .success-message, .error-message {
-        position: relative;
-        padding: 16px 50px 16px 16px;
+    .success-message {
+        background: #d1fae5;
+        color: #065f46;
+        padding: 16px;
         border-radius: 16px;
         margin-bottom: 24px;
         font-size: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .success-message {
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        color: #065f46;
         border-left: 4px solid #10b981;
     }
-
     .error-message {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        background: #fee2e2;
         color: #991b1b;
+        padding: 16px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        font-size: 15px;
         border-left: 4px solid #ef4444;
     }
-
-    .message-content {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex: 1;
-    }
-
-    .message-icon {
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-    }
-
-    .close-message-btn {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: rgba(0, 0, 0, 0.1);
-        border: none;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        color: inherit;
-    }
-
-    .close-message-btn:hover {
-        background: rgba(0, 0, 0, 0.2);
-        transform: scale(1.1);
-    }
-
-    .progress-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        width: 100%;
-        animation: progressAnimation 5s linear forwards;
-    }
-
-    @keyframes progressAnimation {
-        from { width: 100%; }
-        to { width: 0%; }
-    }
-
     .tenants-table-container {
         overflow-x: auto;
         border-radius: 16px;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
-
     .tenants-table {
         width: 100%;
         border-collapse: collapse;
@@ -494,7 +365,6 @@
         border-radius: 16px;
         overflow: hidden;
     }
-
     .table-header {
         padding: 20px;
         text-align: right;
@@ -503,117 +373,20 @@
         font-weight: 700;
         border-bottom: 2px solid #c7d2fe;
     }
-
     .table-row {
         border-bottom: 1px solid #e5e7eb;
         transition: all 0.3s;
     }
-
     .table-row:hover {
         background: #f1f5f9;
         transform: translateY(-2px);
     }
-
     .table-cell {
         padding: 20px;
         text-align: right;
         vertical-align: middle;
         font-size: 15px;
     }
-
-    /* Fixed Image Cell Styles */
-    .image-cell {
-        text-align: center !important;
-        padding: 15px !important;
-    }
-
-    .tenant-image-wrapper {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        margin: 0 auto;
-        cursor: pointer;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid #e5e7eb;
-        transition: all 0.3s ease;
-        background: #f8fafc;
-    }
-
-    .tenant-image-wrapper:hover {
-        border-color: #6366f1;
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-    }
-
-    .tenant-image-thumb {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .image-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        border-radius: 50%;
-    }
-
-    .tenant-image-wrapper:hover .image-overlay {
-        opacity: 1;
-    }
-
-    .eye-icon {
-        width: 20px;
-        height: 20px;
-        color: white;
-        filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
-    }
-
-    .no-image-placeholder {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto;
-        border-radius: 50%;
-        background: #f3f4f6;
-        border: 2px dashed #d1d5db;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #9ca3af;
-        font-size: 10px;
-        text-align: center;
-    }
-
-    .no-image-icon {
-        width: 20px;
-        height: 20px;
-        margin-bottom: 2px;
-    }
-
-    /* Card View Image Styles */
-    .card-image {
-        width: 80px;
-        height: 80px;
-        margin: 10px 0;
-    }
-
-    .card-image .eye-icon {
-        width: 24px;
-        height: 24px;
-    }
-
     .status-badge {
         padding: 8px 16px;
         border-radius: 9999px;
@@ -622,32 +395,48 @@
         display: inline-block;
         transition: all 0.3s;
     }
-
     .status-badge.active {
         background: #d1fae5;
         color: #065f46;
     }
-
     .status-badge.suspended {
         background: #fef3c7;
         color: #92400e;
     }
-
     .status-badge.terminated {
         background: #fee2e2;
         color: #991b1b;
     }
-
+    .tenant-image {
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+    .tenant-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    .tenant-image img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .no-image {
+        color: #9ca3af;
+        font-style: italic;
+    }
     .actions-cell {
         min-width: 160px;
     }
-
     .actions-wrapper {
         display: flex;
         gap: 12px;
         justify-content: flex-end;
     }
-
     .action-link {
         display: flex;
         align-items: center;
@@ -659,54 +448,45 @@
         font-size: 14px;
         text-decoration: none;
     }
-
     .action-link.view {
         color: #3b82f6;
         background: #dbeafe;
     }
-
     .action-link.edit {
         color: #10b981;
         background: #d1fae5;
     }
-
     .action-link.delete {
         color: #ef4444;
         background: #fee2e2;
         border: none;
         cursor: pointer;
     }
-
     .action-link:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
-
     .action-icon {
         width: 20px;
         height: 20px;
     }
-
     .empty-table, .empty-card {
         padding: 48px;
         text-align: center;
         background: #f9fafb;
         border-radius: 16px;
     }
-
     .empty-content {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 20px;
     }
-
     .empty-icon {
         width: 96px;
         height: 96px;
         color: #d1d5db;
     }
-
     .add-first-tenant {
         color: #4f46e5;
         text-decoration: none;
@@ -716,25 +496,21 @@
         background: #e0e7ff;
         transition: all 0.3s;
     }
-
     .add-first-tenant:hover {
         background: #c7d2fe;
         transform: translateY(-2px);
     }
-
     .pagination-wrapper {
         margin-top: 32px;
         display: flex;
         justify-content: center;
     }
-
     .tenants-card-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 24px;
         padding: 20px 0;
     }
-
     .tenant-card {
         background: #ffffff;
         border-radius: 16px;
@@ -742,35 +518,29 @@
         padding: 24px;
         transition: all 0.3s;
     }
-
     .tenant-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     }
-
     .card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 16px;
     }
-
     .card-header h3 {
         font-size: 20px;
         font-weight: 700;
         color: #1e293b;
     }
-
     .card-body p {
         margin: 8px 0;
         font-size: 15px;
         color: #4b5563;
     }
-
     .card-body p strong {
         color: #1e293b;
     }
-
     .card-actions {
         display: flex;
         gap: 12px;
@@ -789,7 +559,6 @@
         z-index: 1000;
         backdrop-filter: blur(8px);
     }
-
     .modal-content {
         position: relative;
         max-width: 95%;
@@ -799,14 +568,12 @@
         border-radius: 16px;
         box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
     }
-
     .modal-image {
         max-width: 100%;
         max-height: 75vh;
         border-radius: 12px;
         transition: transform 0.3s;
     }
-
     .modal-close-btn, .modal-zoom-in, .modal-zoom-out {
         position: absolute;
         top: -20px;
@@ -822,30 +589,25 @@
         cursor: pointer;
         transition: all 0.3s;
     }
-
     .modal-close-btn {
         right: -20px;
         background: #ef4444;
         color: white;
     }
-
     .modal-zoom-in {
         right: 40px;
         background: #10b981;
         color: white;
     }
-
     .modal-zoom-out {
         right: 100px;
         background: #3b82f6;
         color: white;
     }
-
     .modal-close-btn:hover {
         transform: rotate(90deg);
         background: #dc2626;
     }
-
     .modal-zoom-in:hover, .modal-zoom-out:hover {
         transform: scale(1.1);
     }
@@ -855,64 +617,39 @@
         .tenants-wrapper {
             padding: 20px;
         }
-
         .tenants-header {
             flex-direction: column;
             align-items: flex-start;
         }
-
         .header-actions {
             width: 100%;
             justify-content: space-between;
         }
-
         .search-bar, .filter-select {
             width: 100%;
         }
-
         .table-header, .table-cell {
             padding: 12px;
             font-size: 14px;
         }
-
-        .tenant-image-wrapper {
-            width: 50px;
-            height: 50px;
+        .tenant-image img {
+            width: 60px;
+            height: 60px;
         }
-
-        .eye-icon {
-            width: 16px;
-            height: 16px;
-        }
-
-        .no-image-placeholder {
-            width: 50px;
-            height: 50px;
-        }
-
-        .no-image-icon {
-            width: 16px;
-            height: 16px;
-        }
-
         .actions-wrapper {
             gap: 8px;
         }
-
         .action-link {
             width: 36px;
             height: 36px;
         }
-
         .action-icon {
             width: 18px;
             height: 18px;
         }
-
         .tenants-table-container {
             display: none;
         }
-
         .tenants-card-container {
             display: grid;
         }
@@ -922,38 +659,6 @@
 <!-- Enhanced Script -->
 <script>
 let currentZoom = 1;
-
-// Auto-hide messages after 5 seconds
-document.addEventListener('DOMContentLoaded', function() {
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
-    
-    if (successMessage) {
-        setTimeout(() => {
-            hideMessage('successMessage');
-        }, 5000);
-    }
-    
-    if (errorMessage) {
-        setTimeout(() => {
-            hideMessage('errorMessage');
-        }, 5000);
-    }
-});
-
-function closeMessage(messageId) {
-    hideMessage(messageId);
-}
-
-function hideMessage(messageId) {
-    const message = document.getElementById(messageId);
-    if (message) {
-        message.classList.add('animate__fadeOut');
-        setTimeout(() => {
-            message.style.display = 'none';
-        }, 500);
-    }
-}
 
 function showImageModal(imageUrl) {
     const modal = document.getElementById('imageModal');
@@ -1033,5 +738,4 @@ document.getElementById('statusFilter').addEventListener('change', function() {
     });
 });
 </script>
-
 @endsection

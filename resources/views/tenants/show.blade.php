@@ -110,12 +110,28 @@
                                 <span>{{ $tenant->phone }}</span>
                             </div>
                         @endif
+                        @if($tenant->alternate_phone)
+                            <div class="contact-item">
+                                <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
+                                <span>{{ $tenant->alternate_phone }} (بديل)</span>
+                            </div>
+                        @endif
                         @if($tenant->email)
                             <div class="contact-item">
                                 <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                                 <span>{{ $tenant->email }}</span>
+                            </div>
+                        @endif
+                        @if($tenant->whatsapp)
+                            <div class="contact-item">
+                                <svg class="contact-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18.5a6.5 6.5 0 006.5-6.5c0-3.59-2.91-6.5-6.5-6.5S5.5 8.41 5.5 12a6.5 6.5 0 006.5 6.5z"></path>
+                                </svg>
+                                <span>{{ $tenant->whatsapp }} (واتساب)</span>
                             </div>
                         @endif
                     </div>
@@ -148,20 +164,24 @@
                             <span class="detail-value">{{ $tenant->id_number ?? '-' }}</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">تاريخ الميلاد:</span>
-                            <span class="detail-value">{{ $tenant->date_of_birth ? \Carbon\Carbon::parse($tenant->date_of_birth)->format('d/m/Y') : '-' }}</span>
+                            <span class="detail-label">تاريخ انتهاء الهوية:</span>
+                            <span class="detail-value">{{ $tenant->id_expiry_date ? \Carbon\Carbon::parse($tenant->id_expiry_date)->format('d/m/Y') : '-' }}</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">الجنسية:</span>
-                            <span class="detail-value">{{ $tenant->nationality ?? '-' }}</span>
+                            <span class="detail-label">تم التحقق من الهوية:</span>
+                            <span class="detail-value">{{ $tenant->id_verified ? 'نعم' : 'لا' }}</span>
                         </div>
                         <div class="detail-row">
-                            <span class="detail-label">المهنة:</span>
-                            <span class="detail-value">{{ $tenant->occupation ?? '-' }}</span>
+                            <span class="detail-label">جهة العمل:</span>
+                            <span class="detail-value">{{ $tenant->employer ?? '-' }}</span>
                         </div>
                         <div class="detail-row">
                             <span class="detail-label">الدخل الشهري:</span>
                             <span class="detail-value">{{ $tenant->monthly_income ? number_format($tenant->monthly_income, 2) . ' ريال' : '-' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">نوع المستأجر:</span>
+                            <span class="detail-value">{{ $tenant->tenant_type == 'individual' ? 'فرد' : 'شركة' }}</span>
                         </div>
                     </div>
                 </div>
@@ -177,86 +197,8 @@
                     </div>
                     <div class="section-content">
                         <div class="detail-row">
-                            <span class="detail-label">المدينة:</span>
-                            <span class="detail-value">{{ $tenant->city ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">الحي:</span>
-                            <span class="detail-value">{{ $tenant->district ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">الشارع:</span>
-                            <span class="detail-value">{{ $tenant->street ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">الرمز البريدي:</span>
-                            <span class="detail-value">{{ $tenant->postal_code ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">العنوان التفصيلي:</span>
-                            <span class="detail-value">{{ $tenant->additional_number ?? '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contract Information Section -->
-                <div class="details-section">
-                    <div class="section-header">
-                        <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3>معلومات العقد</h3>
-                    </div>
-                    <div class="section-content">
-                        <div class="detail-row">
-                            <span class="detail-label">تاريخ بدء العقد:</span>
-                            <span class="detail-value">{{ $tenant->contract_start_date ? \Carbon\Carbon::parse($tenant->contract_start_date)->format('d/m/Y') : '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">تاريخ نهاية العقد:</span>
-                            <span class="detail-value">{{ $tenant->contract_end_date ? \Carbon\Carbon::parse($tenant->contract_end_date)->format('d/m/Y') : '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">مدة العقد:</span>
-                            <span class="detail-value">
-                                @if($tenant->contract_start_date && $tenant->contract_end_date)
-                                    {{ \Carbon\Carbon::parse($tenant->contract_start_date)->diffInMonths(\Carbon\Carbon::parse($tenant->contract_end_date)) }} أشهر
-                                @else
-                                    -
-                                @endif
-                            </span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">قيمة الإيجار:</span>
-                            <span class="detail-value">{{ $tenant->monthly_rent ? number_format($tenant->monthly_rent, 2) . ' ريال' : '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">الضمان:</span>
-                            <span class="detail-value">{{ $tenant->deposit ? number_format($tenant->deposit, 2) . ' ريال' : '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emergency Contact Section -->
-                <div class="details-section">
-                    <div class="section-header">
-                        <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <h3>جهة اتصال الطوارئ</h3>
-                    </div>
-                    <div class="section-content">
-                        <div class="detail-row">
-                            <span class="detail-label">الاسم:</span>
-                            <span class="detail-value">{{ $tenant->emergency_contact_name ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">الهاتف:</span>
-                            <span class="detail-value">{{ $tenant->emergency_contact_phone ?? '-' }}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">العلاقة:</span>
-                            <span class="detail-value">{{ $tenant->emergency_contact_relation ?? '-' }}</span>
+                            <span class="detail-label">العنوان:</span>
+                            <span class="detail-value">{{ $tenant->address ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -266,7 +208,7 @@
                 <div class="details-section">
                     <div class="section-header">
                         <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h,6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         <h3>ملاحظات</h3>
                     </div>
@@ -620,7 +562,7 @@
         line-height: 1.6;
     }
 
-    /* Image Modal (same as index) */
+    /* Image Modal */
     .image-modal {
         position: fixed;
         inset: 0;
