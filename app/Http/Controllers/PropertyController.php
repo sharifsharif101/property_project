@@ -69,4 +69,12 @@ class PropertyController extends Controller
         return redirect()->route('properties.index')
             ->with('success', 'تم حذف العقار بنجاح.');
     }
+
+
+    public function getUnits($propertyId)
+{
+    $units = \App\Models\Unit::where('property_id', $propertyId)->get(['id', 'unit_number']);
+
+    return response()->json($units);
+}
 }

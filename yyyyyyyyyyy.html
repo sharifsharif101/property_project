@@ -43,3 +43,43 @@
     </div>
 </form>
 
+==========================
+Schema::create('contracts', function (Blueprint $table) {
+    $table->id();
+    
+    // العلاقات
+    $table->unsignedBigInteger('tenant_id');
+    $table->unsignedBigInteger('unit_id');
+    $table->unsignedBigInteger('property_id');
+     
+    // تواريخ العقد
+    $table->date('start_date');
+    $table->date('end_date');
+    $table->date('rent_due_date'); // تاريخ استحقاق الإيجار
+    
+    // معلومات الإيجار
+    $table->decimal('rent_amount', 10, 2); // مبلغ الإيجار
+    $table->enum('rent_type', ['daily', 'weekly', 'monthly', 'yearly'])->default('monthly');
+    $table->decimal('security_deposit', 10, 2)->default(0);
+    
+    // باقي الحقول...
+    $table->string('reference_number')->unique();
+    $table->enum('status', ['active', 'terminated', 'cancelled', 'draft'])->default('draft');
+    
+    // تخفيف قيد الإنهاء
+    $table->enum('termination_reason', [
+        'late_payment', 'property_damage', 'tenant_request', 'landlord_request', 'other'
+    ])->nullable();
+    $table->text('termination_notes')->nullable();
+    
+    $table->timestamps();
+    
+    // قيود محسنة
+    $table->check('end_date > start_date');
+    $table->check('rent_amount > 0');
+    $table->check('
+        (status IN ("terminated", "cancelled") AND termination_reason IS NOT NULL)
+        OR
+        (status NOT IN ("terminated", "cancelled"))
+    ');
+});

@@ -4,10 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PropertyController;  
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\ContractController;
 
 Route::get('/home', function () {
     return view('home');  
 })->name('home');
+
+Route::get('/test', function () {
+    return view('tenants.test');  
+});
+
 
  
 
@@ -57,3 +63,34 @@ Route::get('/tenants/{tenant}', [TenantController::class, 'show'])->name('tenant
 Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit'); // نموذج تعديل
 Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');  // تحديث بيانات
 Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy'); // حذف
+
+/////////////////////////////////////// contracts ..................
+
+ 
+
+// Index - List all contracts
+Route::get('/contracts', [ContractController::class, 'index'])->name('contracts.index');
+
+// Create - Show form to create a new contract
+Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
+
+// Store - Save the new contract
+Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
+
+// Show - Display a specific contract
+Route::get('/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
+
+// Edit - Show form to edit a contract
+Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+
+// Update - Save the edited contract
+Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
+
+// Destroy - Delete a contract
+Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
+
+//اختيار عقار معين يؤدي الى جلب كل الواحدات المرتبطه به 
+Route::get('/properties/{property}/units', [App\Http\Controllers\PropertyController::class, 'getUnits']);
+
+
+
