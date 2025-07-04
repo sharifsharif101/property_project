@@ -132,14 +132,7 @@
                                     <option value="company">شركة</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">الحالة</label>
-                                <select name="status" class="form-input">
-                                    <option value="active">نشط</option>
-                                    <option value="suspended">موقوف</option>
-                                    <option value="terminated">منتهي</option>
-                                </select>
-                            </div>
+                   
                         </div>
                         <div class="form-group">
                             <label class="form-label">صورة المستأجر</label>

@@ -135,14 +135,7 @@
                                     <option value="company" {{ old('tenant_type', $tenant->tenant_type) == 'company' ? 'selected' : '' }}>شركة</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">الحالة</label>
-                                <select name="status" class="form-input">
-                                    <option value="active" {{ old('status', $tenant->status) == 'active' ? 'selected' : '' }}>نشط</option>
-                                    <option value="suspended" {{ old('status', $tenant->status) == 'suspended' ? 'selected' : '' }}>موقوف</option>
-                                    <option value="terminated" {{ old('status', $tenant->status) == 'terminated' ? 'selected' : '' }}>منتهي</option>
-                                </select>
-                            </div>
+                       
                         </div>
 
                         {{-- Image Upload and Preview Section --}}

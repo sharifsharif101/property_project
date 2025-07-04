@@ -25,7 +25,7 @@ return new class extends Migration
             $table->decimal('security_deposit', 10, 2)->default(0);
 
             $table->string('reference_number')->unique();
-            $table->enum('status', ['active', 'terminated', 'cancelled', 'draft'])->default('draft');
+    $table->enum('status', ['active', 'terminated', 'cancelled', 'draft'])->default('draft');
 
             $table->enum('termination_reason', [
                 'late_payment',

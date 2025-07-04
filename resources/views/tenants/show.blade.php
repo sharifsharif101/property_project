@@ -94,13 +94,7 @@
                         {{ $tenant->father_name ? $tenant->father_name . ' ' : '' }}
                         {{ $tenant->last_name }}
                     </h2>
-                    <div class="tenant-status {{ $tenant->status }}">
-                        @switch($tenant->status)
-                            @case('active') نشط @break
-                            @case('suspended') موقوف @break
-                            @default منتهي
-                        @endswitch
-                    </div>
+           
                     <div class="tenant-contact">
                         @if($tenant->phone)
                             <div class="contact-item">

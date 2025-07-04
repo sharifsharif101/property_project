@@ -15,8 +15,10 @@ class StoreContractRequest extends FormRequest
  
     public function rules(): array
     {
+            $contractId = $this->route('contract')?->id;
+
        return [
-                    'tenant_id' => 'required|exists:tenants,id',
+            'tenant_id' => 'required|exists:tenants,id',
             'unit_id' => 'required|exists:units,id',
             'property_id' => 'required|exists:properties,property_id',
             'start_date' => 'required|date',
@@ -24,19 +26,23 @@ class StoreContractRequest extends FormRequest
             'rent_amount' => 'required|numeric|min:0.01',
             'rent_type' => 'required|in:daily,weekly,monthly,yearly',
             'security_deposit' => 'nullable|numeric|min:0',
-            'reference_number' => 'required|unique:contracts,reference_number',
+              'reference_number' => 'required|unique:contracts,reference_number,' . $contractId,
             'status' => 'required|in:active,terminated,cancelled,draft',
             'termination_reason' => 'nullable|in:late_payment,property_damage,tenant_request,landlord_request,contract_expiry,other',
             'termination_notes' => 'nullable|string',
     ];
     }
-public function withValidator($validator)
+ public function withValidator($validator)
 {
     $validator->after(function ($validator) {
- 
+        $contractId = $this->route('contract') ? $this->route('contract')->id : null;
+
         if ($this->unit_id && $this->start_date && $this->end_date) {
             $exists = \App\Models\Contract::where('unit_id', $this->unit_id)
                 ->where('status', 'active')
+                ->when($contractId, function ($query) use ($contractId) {
+                    $query->where('id', '<>', $contractId);
+                })
                 ->where(function ($query) {
                     $query->whereBetween('start_date', [$this->start_date, $this->end_date])
                           ->orWhereBetween('end_date', [$this->start_date, $this->end_date])
@@ -50,8 +56,15 @@ public function withValidator($validator)
             if ($exists) {
                 $validator->errors()->add('unit_id', 'هذه الوحدة مؤجرة لفترة تتداخل مع الفترة المختارة.');
             }
+                    $status = $this->input('status');
+        $reason = $this->input('termination_reason');
+
+        if (in_array($status, ['terminated', 'cancelled']) && empty($reason)) {
+            $validator->errors()->add('termination_reason', 'يجب تحديد سبب الإنهاء أو الإلغاء عند تغيير الحالة إلى منتهي أو ملغي');
+        }
         }
     });
 }
+
 
 }

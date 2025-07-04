@@ -29,5 +29,11 @@ public function property()
 {
     return $this->belongsTo(Property::class, 'property_id');
 }
+ protected $casts = [
+    'start_date' => 'datetime',
+    'end_date' => 'datetime',
+];
+
+    
  
 }

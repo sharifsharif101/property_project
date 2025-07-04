@@ -1,0 +1,80 @@
+{
+  "tableContainer": {
+    "width": "80%",
+    "margin": "auto",
+    "overflowX": "auto"
+  },
+  "table": {
+    "width": "100%",
+    "borderCollapse": "collapse",
+    "marginTop": "20px",
+    "minWidth": "1000px"
+  },
+  "th": {
+    "border": "1px solid #ccc",
+    "padding": "14px",
+    "textAlign": "center",
+    "whiteSpace": "nowrap",
+    "backgroundColor": "#4a90e2",
+    "color": "white"
+  },
+  "td": {
+    "border": "1px solid #ccc",
+    "padding": "14px",
+    "textAlign": "center",
+    "whiteSpace": "nowrap"
+  },
+  "tr:hover": {
+    "backgroundColor": "#f0f8ff"
+  },
+  "status": {
+    "base": {
+      "padding": "5px 10px",
+      "borderRadius": "5px",
+      "fontWeight": "bold",
+      "fontSize": "14px"
+    },
+    "active": {
+      "backgroundColor": "#d4edda",
+      "color": "#155724"
+    },
+    "terminated": {
+      "backgroundColor": "#e2e3e5",
+      "color": "#383d41"
+    },
+    "cancelled": {
+      "backgroundColor": "#f8d7da",
+      "color": "#721c24"
+    },
+    "draft": {
+      "backgroundColor": "#fff3cd",
+      "color": "#856404"
+    }
+  },
+  "actionButtons": {
+    "container": {
+      "display": "inline-block",
+      "margin": "0 4px"
+    },
+    "button": {
+      "padding": "4px 8px",
+      "fontSize": "14px",
+      "border": "none",
+      "borderRadius": "4px",
+      "textDecoration": "none",
+      "cursor": "pointer"
+    },
+    "btnShow": {
+      "backgroundColor": "#e0f0ff",
+      "color": "#0056b3"
+    },
+    "btnEdit": {
+      "backgroundColor": "#fff3cd",
+      "color": "#856404"
+    },
+    "btnDelete": {
+      "backgroundColor": "#f8d7da",
+      "color": "#721c24"
+    }
+  }
+}

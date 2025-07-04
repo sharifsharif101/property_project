@@ -31,7 +31,6 @@ class Tenant extends Model
         'monthly_income',
         'notes',
         'tenant_type',
-        'status',
         'image_path', // حقل جديد لحفظ مسار الصورة
     ];
 
@@ -64,4 +63,14 @@ class Tenant extends Model
             Storage::disk('public')->delete($this->image_path);
         }
     }
+
+     public function getFullNameAttribute()
+{
+    return implode(' ', array_filter([
+        $this->first_name,
+        $this->father_name,
+        $this->last_name,
+    ]));
+}
+
 }

@@ -230,7 +230,7 @@
                 <th class="table-header">البريد</th>
                 <th class="table-header">نوع الهوية</th>
                 <th class="table-header">الدخل</th>
-                <th class="table-header">الحالة</th>
+             
                 <th class="table-header">صورة الهوية</th>
                 <th class="table-header">الإجراءات</th>
             </tr>
@@ -258,18 +258,7 @@
                 <td class="table-cell">
                     {{ $tenant->monthly_income ? number_format($tenant->monthly_income, 2) . ' ريال' : '-' }}
                 </td>
-                <td class="table-cell">
-                    @switch($tenant->status)
-                        @case('active')
-                            <span class="status-badge active">نشط</span>
-                            @break
-                        @case('suspended')
-                            <span class="status-badge suspended">موقوف</span>
-                            @break
-                        @default
-                            <span class="status-badge terminated">منتهي</span>
-                    @endswitch
-                </td>
+           
         <td class="table-cell">
     @if($tenant->image_path)
         <div class="tenant-image-wrapper">
