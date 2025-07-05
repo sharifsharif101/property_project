@@ -55,10 +55,13 @@
     </div>
 </a>
 
-        <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
-            <div class="text-sm text-gray-500 mb-1">العقار</div>
-            <div class="font-semibold">{{ $contract->property->name ?? '—' }}</div>
-        </div>
+    <a href="{{ route('properties.show', $contract->property->property_id) }}"
+   class="block bg-gray-50 p-4 rounded-lg shadow-sm hover:bg-gray-100 transition-colors duration-200">
+    <div class="text-sm text-gray-500 mb-1">العقار</div>
+    <div class="font-semibold">
+        {{ $contract->property->name ?? '—' }}
+    </div>
+</a>
 
         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
             <div class="text-sm text-gray-500 mb-1">الوحدة</div>

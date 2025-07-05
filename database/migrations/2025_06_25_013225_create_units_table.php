@@ -26,8 +26,9 @@ return new class extends Migration
             $table->decimal('area', 10, 3)->nullable(); // مساحة الوحدة، تم زيادة الدقة لتشمل 3 أرقام عشرية (مثلاً 120.500)
             $table->unsignedSmallInteger('floor_number')->nullable(); // رقم الطابق الذي تقع فيه الوحدة
 
-            $table->enum('status', ['vacant', 'rented', 'under_maintenance', 'under_renovation'])
-                  ->default('vacant'); // حالة الوحدة، مع إضافة خيار "under_renovation"
+            $table->enum('status', ['under_maintenance', 'under_renovation', 'ready_for_rent'])
+            ->default('ready_for_rent')
+            ->comment('حالة الوحدة');
 
             // فرض تفرد 'unit_number' لكل 'property_id'
             // هذا يعني أنه لا يمكن أن يكون هناك نفس رقم الوحدة داخل نفس العقار

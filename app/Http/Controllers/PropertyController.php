@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Property; // ← هذا هو السطر المطلوب
-
+use App\Models\Property;  
+use App\Models\Unit; 
 class PropertyController extends Controller
 {
 
@@ -71,9 +71,11 @@ class PropertyController extends Controller
     }
 
 
-    public function getUnits($propertyId)
+public function getUnits($propertyId)
 {
-    $units = \App\Models\Unit::where('property_id', $propertyId)->get(['id', 'unit_number']);
+    $units = Unit::where('property_id', $propertyId)
+                 ->where('status', 'ready_for_rent')
+                 ->get(['id', 'unit_number']); // خذ فقط ما تحتاج
 
     return response()->json($units);
 }

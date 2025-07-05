@@ -135,40 +135,49 @@
 </div>
 
 {{-- 🧠 سكربت جلب الوحدات ديناميكياً --}}
-<script>
+ <script>
 document.addEventListener('DOMContentLoaded', function () {
     const propertySelect = document.getElementById('property-select');
     const unitSelect = document.getElementById('unit-select');
 
+    if (!propertySelect || !unitSelect) return;
+
     propertySelect.addEventListener('change', function () {
         const propertyId = this.value;
-
         unitSelect.innerHTML = '<option value="">جاري التحميل...</option>';
 
-        if (propertyId) {
-            fetch(`/properties/${propertyId}/units`)
-                .then(response => response.json())
-                .then(units => {
-                    if (units.length === 0) {
-                        unitSelect.innerHTML = '<option value="">لا توجد وحدات متاحة لهذا العقار</option>';
-                        return;
-                    }
-
-                    unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
-                    units.forEach(unit => {
-                        const option = document.createElement('option');
-                        option.value = unit.id;
-                        option.textContent = `وحدة رقم ${unit.unit_number}`;
-                        unitSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    unitSelect.innerHTML = '<option value="">فشل تحميل الوحدات</option>';
-                    console.error('خطأ أثناء تحميل الوحدات:', error);
-                });
-        } else {
+        if (!propertyId) {
             unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
+            return;
         }
+
+        fetch(`/properties/${propertyId}/units`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Response not ok");
+                }
+                return response.json();
+            })
+            .then(units => {
+                unitSelect.innerHTML = '';
+
+                if (!Array.isArray(units) || units.length === 0) {
+                    unitSelect.innerHTML = '<option value="">لا توجد وحدات متاحة</option>';
+                    return;
+                }
+
+                unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
+                units.forEach(unit => {
+                    const option = document.createElement('option');
+                    option.value = unit.id;
+                    option.textContent = `وحدة رقم ${unit.unit_number}`;
+                    unitSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('خطأ أثناء تحميل الوحدات:', error);
+                unitSelect.innerHTML = '<option value="">حدث خطأ في التحميل</option>';
+            });
     });
 });
 </script>

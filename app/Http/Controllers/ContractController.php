@@ -17,23 +17,21 @@ public function index()
 
     return view('contracts.index', compact('contracts'));
 }
-
-
-public function create()
+ public function create()
 {
-    // توليد رقم مؤقت لعرضه
+    // توليد رقم مرجعي فريد
     do {
         $randomNumber = mt_rand(100000, 999999);
         $referenceNumber = 'REF-' . $randomNumber;
     } while (Contract::where('reference_number', $referenceNumber)->exists());
 
-    return view('contracts.create', compact('referenceNumber'))
-        ->with([
-            'tenants' => Tenant::all(),
-            'units' => Unit::all(),
-            'properties' => Property::all(),
-        ]);
+    // نحتاج فقط إلى المستأجرين والعقارات، أما الوحدات فستُجلب لاحقًا عند اختيار العقار
+    $tenants = Tenant::all();
+    $properties = Property::all();
+
+    return view('contracts.create', compact('referenceNumber', 'tenants', 'properties'));
 }
+
 
 
 public function store(StoreContractRequest $request)

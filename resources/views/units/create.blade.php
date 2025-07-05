@@ -82,17 +82,20 @@
                         class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
                 </div>
 
-                <div>
-                    <label class="block mb-1 font-semibold text-gray-700">حالة الوحدة</label>
-                    <select :name="`units[${index}][status]`" required
-                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                        <option value="">اختر الحالة</option>
-                        <option value="vacant">شاغرة</option>
-                        <option value="rented">مؤجرة</option>
-                        <option value="under_maintenance">تحت الصيانة</option>
-                        <option value="under_renovation">تحت التجديد</option>
-                    </select>
-                </div>
+                <!-- داخل حقل حالة الوحدة -->
+<div>
+    <label class="block mb-1 font-semibold text-gray-700">حالة الوحدة</label>
+    <select :name="`units[${index}][status]`" required
+        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+        <option value="">اختر الحالة</option>
+        <option value="available">متاحة</option>
+        <option value="reserved">محجوزة</option>
+        <option value="rented">مؤجرة</option>
+        <option value="under_maintenance">قيد الصيانة</option>
+        <option value="disabled">معطلة</option>
+    </select>
+</div>
+
             </div>
         </div>
     </template>
