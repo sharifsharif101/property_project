@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+ use Carbon\Carbon;
 
 class Contract extends Model
 {
@@ -33,7 +34,6 @@ public function property()
     'start_date' => 'datetime',
     'end_date' => 'datetime',
 ];
-
-    
+ 
  
 }

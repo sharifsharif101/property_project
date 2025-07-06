@@ -1,4 +1,4 @@
- @extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'قائمة الوحدات')
 
@@ -73,14 +73,9 @@ $statusLabels = [
         </thead>
         <tbody>
             @forelse ($units as $unit)
-                @php
-                    $hasActiveContract = $unit->contracts()->where('status', 'active')->exists();
-                @endphp
                 <tr data-unit-id="{{ $unit->id }}">
                     <td>
-                        @if (!$hasActiveContract)
-                            <input type="checkbox" class="rowCheckbox" value="{{ $unit->id }}">
-                        @endif
+                        <input type="checkbox" class="rowCheckbox" value="{{ $unit->id }}">
                     </td>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $unit->property->name ?? 'غير معروف' }}</td>
@@ -100,17 +95,10 @@ $statusLabels = [
                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                            عرض
                         </a>
-                        @if(!$hasActiveContract)
                         <a href="{{ route('units.edit', $unit->id) }}" 
                            class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
                            تعديل
                         </a>
-                        @else
-                        <button disabled
-                           class="px-3 py-1 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                           تعديل
-                        </button>
-                        @endif
                     </td>
                 </tr>
             @empty
@@ -154,14 +142,9 @@ $statusLabels = [
                             </thead>
                             <tbody>
                                 @foreach ($propertyUnits as $unit)
-                                    @php
-                                        $hasActiveContract = $unit->contracts()->where('status', 'active')->exists();
-                                    @endphp
                                     <tr data-unit-id="{{ $unit->id }}">
                                         <td>
-                                            @if (!$hasActiveContract)
-                                                <input type="checkbox" class="rowCheckbox grouped-checkbox" value="{{ $unit->id }}">
-                                            @endif
+                                            <input type="checkbox" class="rowCheckbox grouped-checkbox" value="{{ $unit->id }}">
                                         </td>
                                         <td>{{ $unit->unit_number }}</td>
                                         <td>{{ $unit->bedrooms }}</td>
@@ -175,17 +158,10 @@ $statusLabels = [
                                                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                                                عرض
                                             </a>
-                                            @if(!$hasActiveContract)
                                             <a href="{{ route('units.edit', $unit->id) }}" 
                                                class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
                                                تعديل
                                             </a>
-                                            @else
-                                            <button disabled
-                                               class="px-3 py-1 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                                               تعديل
-                                            </button>
-                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -199,13 +175,12 @@ $statusLabels = [
         <p class="p-4 text-center text-gray-600">لا توجد عقارات أو وحدات لعرضها في العرض المجمع.</p>
     @endforelse
 </div>
+
 </div>
 </div>
 </div>
 </div>
 </section>
-
- 
 
 <style>
 @keyframes fade-in {

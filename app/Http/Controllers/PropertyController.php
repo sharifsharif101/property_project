@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Property;  
 use App\Models\Unit; 
+use Carbon\Carbon;
 class PropertyController extends Controller
+
 {
 
     public function index()
@@ -73,10 +75,24 @@ class PropertyController extends Controller
 
 public function getUnits($propertyId)
 {
+    $today = Carbon::today();
+
+    // استعلام للوحدات التي:
+    //  - تنتمي للعقار المطلوب
+    //  - ولا توجد عقود نشطة أو قادمة لها
+
     $units = Unit::where('property_id', $propertyId)
-                 ->where('status', 'ready_for_rent')
-                 ->get(['id', 'unit_number']); // خذ فقط ما تحتاج
+        ->whereDoesntHave('contracts', function ($query) use ($today) {
+            $query->where('status', 'active')
+                  ->orWhere(function ($q) use ($today) {
+                      $q->where('start_date', '>', $today)
+                        ->whereIn('status', ['active', 'draft']); // ممكن 'draft' أو أي حالة للعقد القادم
+                  });
+        })
+        ->get(['id', 'unit_number']);
 
     return response()->json($units);
 }
+
+
 }

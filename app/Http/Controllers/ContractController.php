@@ -52,16 +52,13 @@ public function store(StoreContractRequest $request)
      return redirect()->route('contracts.create')->with('success', 'تم إنشاء العقد بنجاح.');
 }
      // عرض نموذج التعديل
-    public function edit(Contract $contract)
-    {
-        // جلب المستأجرين، العقارات، والوحدات لعرضها في القوائم المنسدلة
-        $tenants = Tenant::all();
-        $properties = Property::all();
-        $units = Unit::all();
-
-        return view('contracts.edit', compact('contract', 'tenants', 'properties', 'units'));
-    }
-
+public function edit(Contract $contract)
+{
+    $tenants = Tenant::all();
+    $properties = Property::all();
+    $units = Unit::all();
+    return view('contracts.edit', compact('contract', 'tenants', 'properties', 'units'));
+}
     // تحديث بيانات العقد
     public function update(StoreContractRequest $request, Contract $contract)
 {

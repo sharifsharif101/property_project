@@ -263,6 +263,7 @@
                             <button type="submit" class="btn-delete">حذف</button>
                         </form>
                     </td>
+ 
                 </tr>
             @empty
                 <tr>

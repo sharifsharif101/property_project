@@ -150,7 +150,7 @@ class UnitController extends Controller
             'bathrooms' => 'required|integer',
             'area' => 'required|numeric',
             'floor_number' => 'required|integer',
-            'status' => 'required|in:ready_for_rent,under_maintenance,under_renovation',
+            'status' => 'required', 'in:available,reserved,rented,under_maintenance,disabled',
         ]);
 
         $unit->update($validated);

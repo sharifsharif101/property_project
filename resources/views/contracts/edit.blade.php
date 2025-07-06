@@ -1,200 +1,196 @@
 @extends('layouts.app')
 
+@php
+    use Carbon\Carbon;
+@endphp
+
 @section('content')
+<div class="max-w-4xl	    mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-10">تعديل العقد</h2>
 
-{{-- ✅ عرض أخطاء الفاليدشن --}}
-@if ($errors->any())
-    <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-        <strong>حدثت بعض الأخطاء:</strong>
-        <ul class="mt-2 list-disc list-inside">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<div class="max-w-4xl mx-auto mt-10 bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-6">تعديل العقد</h2>
-
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <form action="{{ route('contracts.update', $contract->id) }}" method="POST" class="space-y-4">
+    <form action="{{ route('contracts.update', $contract) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
         {{-- المستأجر --}}
         <div>
-            <label>المستأجر</label>
-            <select name="tenant_id" class="w-full border p-2 rounded" required>
-                <option value="">اختر مستأجر</option>
+            <label for="tenant_id" class="block mb-2 font-medium text-gray-700">المستأجر</label>
+            <select id="tenant_id" name="tenant_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
                 @foreach($tenants as $tenant)
-                    <option value="{{ $tenant->id }}" 
-                        {{ old('tenant_id', $contract->tenant_id) == $tenant->id ? 'selected' : '' }}>
+                    <option value="{{ $tenant->id }}" {{ $contract->tenant_id == $tenant->id ? 'selected' : '' }}>
                         {{ $tenant->first_name }} {{ $tenant->last_name }}
                     </option>
                 @endforeach
             </select>
+            @error('tenant_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- العقار --}}
         <div>
-            <label>العقار</label>
-            <select name="property_id" id="property-select" class="w-full border p-2 rounded" required>
-                <option value="">اختر العقار</option>
+            <label for="property_id" class="block mb-2 font-medium text-gray-700">العقار</label>
+            <select id="property_id" name="property_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
                 @foreach($properties as $property)
-                    <option value="{{ $property->property_id }}"
-                        {{ old('property_id', $contract->property_id) == $property->property_id ? 'selected' : '' }}>
-                        {{ $property->name ?? 'عقار #' . $property->property_id }}
+                    <option value="{{ $property->property_id }}" {{ $contract->property_id == $property->property_id ? 'selected' : '' }}>
+                        {{ $property->name }}
                     </option>
                 @endforeach
             </select>
+            @error('property_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- الوحدة --}}
         <div>
-            <label>الوحدة</label>
-            <select name="unit_id" id="unit-select" class="w-full border p-2 rounded" required>
-                <option value="">اختر وحدة</option>
-                {{-- سيتم ملؤها بالوحدات المناسبة بواسطة جافاسكريبت --}}
+            <label for="unit_id" class="block mb-2 font-medium text-gray-700">الوحدة</label>
+            <select id="unit_id" name="unit_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                <option value="" disabled {{ $contract->unit_id ? '' : 'selected' }}>اختر وحدة</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->id }}" {{ $contract->unit_id == $unit->id ? 'selected' : '' }}>
+                        {{ $unit->unit_number }}
+                    </option>
+                @endforeach
             </select>
+            @error('unit_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- التواريخ --}}
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label>تاريخ البداية</label>
-                <input type="date" name="start_date" class="w-full border p-2 rounded" 
-                    value="{{ old('start_date', $contract->start_date->format('Y-m-d')) }}" required>
+                <label for="start_date" class="block mb-2 font-medium text-gray-700">تاريخ البداية</label>
+                <input type="date" id="start_date" name="start_date"
+                       value="{{ $contract->start_date ? Carbon::parse($contract->start_date)->format('Y-m-d') : '' }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                @error('start_date')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-            <div>
-                <label>تاريخ النهاية</label>
-                <input type="date" name="end_date" class="w-full border p-2 rounded" 
-                    value="{{ old('end_date', $contract->end_date ? $contract->end_date->format('Y-m-d') : '') }}">
-            </div>
-        </div>
 
-        {{-- الإيجار --}}
-        <div class="grid grid-cols-2 gap-4">
             <div>
-                <label>قيمة الإيجار</label>
-                <input type="number" name="rent_amount" step="0.01" class="w-full border p-2 rounded" 
-                    value="{{ old('rent_amount', $contract->rent_amount) }}" required>
+                <label for="end_date" class="block mb-2 font-medium text-gray-700">تاريخ النهاية</label>
+                <input type="date" id="end_date" name="end_date"
+                       value="{{ $contract->end_date ? Carbon::parse($contract->end_date)->format('Y-m-d') : '' }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                @error('end_date')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-            <div>
-                <label>نوع الإيجار</label>
-                <select name="rent_type" class="w-full border p-2 rounded" required>
-                    <option value="daily" {{ old('rent_type', $contract->rent_type) == 'daily' ? 'selected' : '' }}>يومي</option>
-                    <option value="weekly" {{ old('rent_type', $contract->rent_type) == 'weekly' ? 'selected' : '' }}>أسبوعي</option>
-                    <option value="monthly" {{ old('rent_type', $contract->rent_type) == 'monthly' ? 'selected' : '' }}>شهري</option>
-                    <option value="yearly" {{ old('rent_type', $contract->rent_type) == 'yearly' ? 'selected' : '' }}>سنوي</option>
-                </select>
-            </div>
-        </div>
-
-        {{-- الضمان --}}
-        <div>
-            <label>الضمان</label>
-            <input type="number" name="security_deposit" step="0.01" class="w-full border p-2 rounded"
-                value="{{ old('security_deposit', $contract->security_deposit) }}">
-        </div>
-
-        {{-- رقم المرجع --}}
-        <div>
-            <label>رقم المرجع</label>
-            <input type="text" value="{{ old('reference_number', $contract->reference_number) }}" disabled
-                class="w-full border p-2 rounded bg-gray-100 cursor-not-allowed" />
-            <input type="hidden" name="reference_number" value="{{ old('reference_number', $contract->reference_number) }}" />
         </div>
 
         {{-- الحالة --}}
         <div>
-            <label>الحالة</label>
-            <select name="status" class="w-full border p-2 rounded" required>
-                <option value="draft" {{ old('status', $contract->status) == 'draft' ? 'selected' : '' }}>مسودة</option>
-                <option value="active" {{ old('status', $contract->status) == 'active' ? 'selected' : '' }}>نشط</option>
-                <option value="terminated" {{ old('status', $contract->status) == 'terminated' ? 'selected' : '' }}>منتهي</option>
-                <option value="cancelled" {{ old('status', $contract->status) == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+            <label for="status" class="block mb-2 font-medium text-gray-700">الحالة</label>
+            <select name="status" id="status" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                @php
+                    $statuses = [
+                        'active' => 'نشط',
+                        'terminated' => 'منتهي',
+                        'cancelled' => 'ملغي',
+                        'draft' => 'مسودة',
+                    ];
+                @endphp
+                @foreach($statuses as $key => $label)
+                    <option value="{{ $key }}" {{ $contract->status == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
             </select>
+            @error('status')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- رقم المرجع --}}
+        <div>
+            <label for="reference_number" class="block mb-2 font-medium text-gray-700">رقم المرجع</label>
+            <input type="text" name="reference_number" id="reference_number"
+                   value="{{ $contract->reference_number }}"
+                   class="w-full p-3 border border-gray-300 rounded-xl bg-gray-100" readonly>
+        </div>
+
+        {{-- قيمة الإيجار --}}
+        <div>
+            <label for="rent_amount" class="block mb-2 font-medium text-gray-700">قيمة الإيجار</label>
+            <input type="number" name="rent_amount" id="rent_amount"
+                   value="{{ $contract->rent_amount }}"
+                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none"
+                   step="0.01" min="0.01">
+            @error('rent_amount')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- نوع الإيجار --}}
+        <div>
+            <label for="rent_type" class="block mb-2 font-medium text-gray-700">نوع الإيجار</label>
+            <select name="rent_type" id="rent_type" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                @php
+                    $rentTypes = ['daily' => 'يومي', 'weekly' => 'أسبوعي', 'monthly' => 'شهري', 'yearly' => 'سنوي'];
+                @endphp
+                @foreach($rentTypes as $key => $label)
+                    <option value="{{ $key }}" {{ $contract->rent_type == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+            @error('rent_type')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- التأمين --}}
+        <div>
+            <label for="security_deposit" class="block mb-2 font-medium text-gray-700">التأمين</label>
+            <input type="number" name="security_deposit" id="security_deposit"
+                   value="{{ $contract->security_deposit ?? '' }}"
+                   class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none"
+                   step="0.01" min="0">
+            @error('security_deposit')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- سبب الإنهاء --}}
         <div>
-            <label>سبب الإنهاء</label>
-            <select name="termination_reason" class="w-full border p-2 rounded">
-                <option value="" {{ old('termination_reason', $contract->termination_reason) == '' ? 'selected' : '' }}>-- إن وجد --</option>
-                <option value="late_payment" {{ old('termination_reason', $contract->termination_reason) == 'late_payment' ? 'selected' : '' }}>تأخر في الدفع</option>
-                <option value="property_damage" {{ old('termination_reason', $contract->termination_reason) == 'property_damage' ? 'selected' : '' }}>تلف في العقار</option>
-                <option value="tenant_request" {{ old('termination_reason', $contract->termination_reason) == 'tenant_request' ? 'selected' : '' }}>طلب المستأجر</option>
-                <option value="landlord_request" {{ old('termination_reason', $contract->termination_reason) == 'landlord_request' ? 'selected' : '' }}>طلب المالك</option>
-                <option value="contract_expiry" {{ old('termination_reason', $contract->termination_reason) == 'contract_expiry' ? 'selected' : '' }}>انتهاء العقد</option>
-                <option value="other" {{ old('termination_reason', $contract->termination_reason) == 'other' ? 'selected' : '' }}>أخرى</option>
+            <label for="termination_reason" class="block mb-2 font-medium text-gray-700">سبب الإنهاء</label>
+            <select name="termination_reason" id="termination_reason" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
+                <option value="" {{ is_null($contract->termination_reason) ? 'selected' : '' }}>لا يوجد</option>
+                @php
+                    $terminationReasons = [
+                        'late_payment' => 'التأخر في الدفع',
+                        'property_damage' => 'إتلاف العقار',
+                        'tenant_request' => 'طلب المستأجر',
+                        'landlord_request' => 'طلب المالك',
+                        'contract_expiry' => 'انتهاء العقد',
+                        'other' => 'أخرى',
+                    ];
+                @endphp
+                @foreach($terminationReasons as $key => $label)
+                    <option value="{{ $key }}" {{ $contract->termination_reason == $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
             </select>
         </div>
 
         {{-- ملاحظات الإنهاء --}}
         <div>
-            <label>ملاحظات الإنهاء</label>
-            <textarea name="termination_notes" rows="3" class="w-full border p-2 rounded">{{ old('termination_notes', $contract->termination_notes) }}</textarea>
+            <label for="termination_notes" class="block mb-2 font-medium text-gray-700">ملاحظات الإنهاء</label>
+            <textarea id="termination_notes" name="termination_notes"
+                      class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none"
+                      rows="4">{{ $contract->termination_notes ?? '' }}</textarea>
+            @error('termination_notes')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">تحديث العقد</button>
+        {{-- زر الحفظ --}}
+        <div class="flex justify-center gap-4 pt-6">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition duration-200 shadow-md">
+                حفظ التغييرات
+            </button>
+            <a href="{{ route('contracts.index') }}" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition duration-200 shadow-md">
+                رجوع
+            </a>
+        </div>
     </form>
 </div>
-
-{{-- 🧠 سكربت جلب الوحدات ديناميكياً مع اختيار الوحدة الحالية --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const propertySelect = document.getElementById('property-select');
-    const unitSelect = document.getElementById('unit-select');
-
-    // دالة لتحميل الوحدات حسب العقار
-    function loadUnits(propertyId, selectedUnitId = null) {
-        unitSelect.innerHTML = '<option value="">جاري التحميل...</option>';
-
-        if (propertyId) {
-            fetch(`/properties/${propertyId}/units`)
-                .then(response => response.json())
-                .then(units => {
-                    if (units.length === 0) {
-                        unitSelect.innerHTML = '<option value="">لا توجد وحدات متاحة لهذا العقار</option>';
-                        return;
-                    }
-
-                    unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
-                    units.forEach(unit => {
-                        const option = document.createElement('option');
-                        option.value = unit.id;
-                        option.textContent = `وحدة رقم ${unit.unit_number}`;
-
-                        if (selectedUnitId && selectedUnitId == unit.id) {
-                            option.selected = true;
-                        }
-
-                        unitSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    unitSelect.innerHTML = '<option value="">فشل تحميل الوحدات</option>';
-                    console.error('خطأ أثناء تحميل الوحدات:', error);
-                });
-        } else {
-            unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
-        }
-    }
-
-    // تحميل الوحدات عند تغيير العقار
-    propertySelect.addEventListener('change', function () {
-        loadUnits(this.value);
-    });
-
-    // تحميل الوحدات مع اختيار الوحدة الحالية عند تحميل الصفحة
-    loadUnits(propertySelect.value, {{ old('unit_id', $contract->unit_id ?? 'null') }});
-});
-</script>
-
 @endsection
