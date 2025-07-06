@@ -1,61 +1,40 @@
-@extends('layouts.app')
 
+@extends('layouts.app')
+ 
 @php
     use Carbon\Carbon;
 @endphp
 
 @section('content')
-<div class="max-w-4xl	    mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
+<div class="max-w-3xl mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-10">تعديل العقد</h2>
 
     <form action="{{ route('contracts.update', $contract) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
-        {{-- المستأجر --}}
+        {{-- المستأجر (للقراءة فقط) --}}
         <div>
-            <label for="tenant_id" class="block mb-2 font-medium text-gray-700">المستأجر</label>
-            <select id="tenant_id" name="tenant_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
-                @foreach($tenants as $tenant)
-                    <option value="{{ $tenant->id }}" {{ $contract->tenant_id == $tenant->id ? 'selected' : '' }}>
-                        {{ $tenant->first_name }} {{ $tenant->last_name }}
-                    </option>
-                @endforeach
-            </select>
-            @error('tenant_id')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
+            <label class="block mb-2 font-medium text-gray-700">المستأجر</label>
+            <input type="text" value="{{ $contract->tenant->first_name }} {{ $contract->tenant->last_name }}" readonly
+                   class="w-full p-3 border border-gray-200 bg-gray-100 rounded-xl text-gray-700">
+            <input type="hidden" name="tenant_id" value="{{ $contract->tenant_id }}">
         </div>
 
-        {{-- العقار --}}
+        {{-- العقار (للقراءة فقط) --}}
         <div>
-            <label for="property_id" class="block mb-2 font-medium text-gray-700">العقار</label>
-            <select id="property_id" name="property_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
-                @foreach($properties as $property)
-                    <option value="{{ $property->property_id }}" {{ $contract->property_id == $property->property_id ? 'selected' : '' }}>
-                        {{ $property->name }}
-                    </option>
-                @endforeach
-            </select>
-            @error('property_id')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
+            <label class="block mb-2 font-medium text-gray-700">العقار</label>
+            <input type="text" value="{{ $contract->property->name }}" readonly
+                   class="w-full p-3 border border-gray-200 bg-gray-100 rounded-xl text-gray-700">
+            <input type="hidden" name="property_id" value="{{ $contract->property_id }}">
         </div>
 
-        {{-- الوحدة --}}
+        {{-- الوحدة (للقراءة فقط) --}}
         <div>
-            <label for="unit_id" class="block mb-2 font-medium text-gray-700">الوحدة</label>
-            <select id="unit_id" name="unit_id" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none">
-                <option value="" disabled {{ $contract->unit_id ? '' : 'selected' }}>اختر وحدة</option>
-                @foreach($units as $unit)
-                    <option value="{{ $unit->id }}" {{ $contract->unit_id == $unit->id ? 'selected' : '' }}>
-                        {{ $unit->unit_number }}
-                    </option>
-                @endforeach
-            </select>
-            @error('unit_id')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
+            <label class="block mb-2 font-medium text-gray-700">الوحدة</label>
+            <input type="text" value="{{ $contract->unit->unit_number }}" readonly
+                   class="w-full p-3 border border-gray-200 bg-gray-100 rounded-xl text-gray-700">
+            <input type="hidden" name="unit_id" value="{{ $contract->unit_id }}">
         </div>
 
         {{-- التواريخ --}}
