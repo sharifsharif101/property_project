@@ -15,5 +15,9 @@ class Property extends Model
     ];
 
     protected $primaryKey = 'property_id';
+public function units()
+{
+    return $this->hasMany(Unit::class, 'property_id');
+}
 
 }

@@ -63,33 +63,31 @@ class PropertyController extends Controller
         return view('properties.show', compact('property'));
     }
 
-    public function destroy($id)
-    {
-        $property = Property::findOrFail($id);
-        $property->delete();
+public function destroy($id)
+{
+    $property = Property::findOrFail($id);
 
+    // تحقق إن كان العقار مرتبطًا بأي وحدة
+    if ($property->units()->exists()) {
         return redirect()->route('properties.index')
-            ->with('success', 'تم حذف العقار بنجاح.');
+            ->with('error', 'لا يمكن حذف العقار لأنه مرتبط بوحدات.');
     }
+
+    $property->delete();
+
+    return redirect()->route('properties.index')
+        ->with('success', 'تم حذف العقار بنجاح.');
+}
 
 
 public function getUnits($propertyId)
 {
-    $today = Carbon::today();
-
-    // استعلام للوحدات التي:
-    //  - تنتمي للعقار المطلوب
-    //  - ولا توجد عقود نشطة أو قادمة لها
-
-    $units = Unit::where('property_id', $propertyId)
-        ->whereDoesntHave('contracts', function ($query) use ($today) {
-            $query->where('status', 'active')
-                  ->orWhere(function ($q) use ($today) {
-                      $q->where('start_date', '>', $today)
-                        ->whereIn('status', ['active', 'draft']); // ممكن 'draft' أو أي حالة للعقد القادم
-                  });
-        })
-        ->get(['id', 'unit_number']);
+    
+  $units = Unit::where('property_id', $propertyId)
+    ->whereDoesntHave('contracts', function ($query) {
+        $query->whereIn('status', ['active', 'draft']);
+    })
+    ->get(['id', 'unit_number']);
 
     return response()->json($units);
 }

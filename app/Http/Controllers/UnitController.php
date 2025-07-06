@@ -9,37 +9,33 @@ use Illuminate\Http\Request;
 class UnitController extends Controller
 {
 
-    public function bulkDelete(Request $request)
-    {
-        $ids = $request->input('ids', []);
+   public function bulkDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
 
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['error' => 'لم يتم تحديد وحدات للحذف.'], 400);
-        }
-
-        try {
-            \App\Models\Unit::whereIn('id', $ids)->delete();
-            return response()->json(['success' => 'تم حذف الوحدات المحددة بنجاح.']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'فشل في الحذف.'], 500);
-        }
+    if (!is_array($ids) || empty($ids)) {
+        return response()->json(['error' => 'لم يتم تحديد وحدات للحذف.'], 400);
     }
-    //bulkDelete
-    // استلم قائمة المعرفات ids من الطلب.
 
-    // إذا كانت ids ليست مصفوفة أو كانت فارغة:
+    try {
+        // التحقق من وجود أي عقود مرتبطة بالوحدات
+        $unitsWithContracts = \App\Models\Contract::whereIn('unit_id', $ids)
+            ->pluck('unit_id')
+            ->toArray();
 
-    // أرجع استجابة JSON فيها رسالة خطأ "لم يتم تحديد وحدات للحذف".
+        if (!empty($unitsWithContracts)) {
+            return response()->json([
+                'error' => 'لا يمكن حذف بعض الوحدات لأنها مرتبطة بعقود.'
+            ], 403);
+        }
 
-    // حاول تنفيذ الخطوات التالية:
-
-    // احذف كل الوحدات التي معرفها موجود ضمن ids.
-
-    // أرجع استجابة JSON فيها رسالة نجاح "تم حذف الوحدات المحددة بنجاح".
-
-    // إذا حدث أي خطأ أثناء الحذف:
-
-    // أرجع استجابة JSON فيها رسالة خطأ "فشل في الحذف".
+        // تنفيذ الحذف إذا لم يتم العثور على عقود
+        \App\Models\Unit::whereIn('id', $ids)->delete();
+        return response()->json(['success' => 'تم حذف الوحدات المحددة بنجاح.']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'فشل في الحذف: ' . $e->getMessage()], 500);
+    }
+}
 
     public function updateField(Request $request, Unit $unit)
     {

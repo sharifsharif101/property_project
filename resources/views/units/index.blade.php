@@ -295,5 +295,123 @@ outline: 2px solid #007bff;
 outline-offset: 2px;
 }
 </style>
+
+ 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Toggle between full table and grouped view
+    const toggleViewBtn = document.getElementById('toggleViewBtn');
+    const fullTableContainer = document.getElementById('fullTableContainer');
+    const groupedView = document.getElementById('groupedView');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+
+    toggleViewBtn.addEventListener('click', function () {
+        fullTableContainer.classList.toggle('hidden');
+        groupedView.classList.toggle('hidden');
+        toggleViewBtn.textContent = groupedView.classList.contains('hidden') ? 'عرض مجمّع' : 'عرض كامل';
+        updateDeleteButtonVisibility();
+    });
+
+    // Handle "Select All" checkbox in full table
+    const selectAllCheckbox = document.getElementById('selectAll');
+    selectAllCheckbox.addEventListener('change', function () {
+        document.querySelectorAll('.rowCheckbox').forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+        updateDeleteButtonVisibility();
+    });
+
+    // Handle "Select All" checkboxes in grouped view
+    document.querySelectorAll('.selectAllGrouped').forEach(selectAll => {
+        selectAll.addEventListener('change', function () {
+            const parentGroup = selectAll.closest('.property-group');
+            parentGroup.querySelectorAll('.grouped-checkbox').forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateDeleteButtonVisibility();
+        });
+    });
+
+    // Handle individual checkbox changes
+    document.querySelectorAll('.rowCheckbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            updateDeleteButtonVisibility();
+        });
+    });
+
+    // Update visibility of delete button
+    function updateDeleteButtonVisibility() {
+        const checkedCheckboxes = document.querySelectorAll('.rowCheckbox:checked');
+        deleteSelectedBtn.classList.toggle('hidden', checkedCheckboxes.length === 0);
+    }
+
+    // Handle bulk delete
+    deleteSelectedBtn.addEventListener('click', function () {
+        const selectedIds = Array.from(document.querySelectorAll('.rowCheckbox:checked')).map(checkbox => checkbox.value);
+
+        if (selectedIds.length === 0) {
+            alert('يرجى تحديد وحدة واحدة على الأقل للحذف.');
+            return;
+        }
+
+        if (confirm('هل أنت متأكد من حذف الوحدات المحددة؟')) {
+            fetch('{{ route("units.bulkDelete") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ ids: selectedIds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove deleted rows from the table
+                    selectedIds.forEach(id => {
+                        const row = document.querySelector(`tr[data-unit-id="${id}"]`);
+                        if (row) {
+                            row.remove();
+                        }
+                    });
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
+                    successDiv.innerHTML = `<strong class="font-bold">نجاح!</strong><span class="block sm:inline">${data.success}</span>`;
+                    document.querySelector('.content').prepend(successDiv);
+                    setTimeout(() => successDiv.remove(), 3000);
+                    updateDeleteButtonVisibility();
+                } else {
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                    errorDiv.innerHTML = `<strong class="font-bold">خطأ!</strong><span class="block sm:inline">${data.error}</span>`;
+                    document.querySelector('.content').prepend(errorDiv);
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                errorDiv.innerHTML = `<strong class="font-bold">خطأ!</strong><span class="block sm:inline">حدث خطأ أثناء الحذف.</span>`;
+                document.querySelector('.content').prepend(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000);
+            });
+        }
+    });
+
+    // Handle expand/collapse for grouped view
+    document.querySelectorAll('.expand-collapse-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const unitsList = this.closest('.property-group').querySelector('.units-list');
+            const isExpanded = this.getAttribute('data-expanded') === 'true';
+            unitsList.classList.toggle('hidden');
+            this.setAttribute('data-expanded', !isExpanded);
+            this.textContent = isExpanded ? 'عرض الوحدات' : 'إخفاء الوحدات';
+        });
+    });
+});
+</script>
 </section>
 @endsection

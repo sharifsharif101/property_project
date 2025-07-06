@@ -11,11 +11,10 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('tenant_id')->constrained('tenants')->onDelete('restrict');
- 
-            $table->foreignId('unit_id')->constrained('units')->onDelete('restrict');
-            $table->foreignId('property_id')->constrained('properties')->onDelete('restrict');
-       
+$table->foreignId('tenant_id')->constrained('tenants')->onDelete('restrict');
+$table->foreignId('unit_id')->constrained('units')->onDelete('restrict');
+$table->foreignId('property_id')->constrained('properties')->onDelete('restrict');
+
 
             $table->date('start_date');
             $table->date('end_date');

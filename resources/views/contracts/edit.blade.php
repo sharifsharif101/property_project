@@ -6,7 +6,30 @@
 @endphp
 
 @section('content')
-<div class="max-w-3xl mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
+{{-- ✅ رسائل الجلسة (نجاح أو خطأ عام) --}}
+@if(session('success'))
+    <div class="max-w-5xl mx-auto mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl shadow-sm">
+        ✅ {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="max-w-5xl mx-auto mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl shadow-sm">
+        ❌ {{ session('error') }}
+    </div>
+@endif
+
+{{-- ❗️عرض جميع الأخطاء --}}
+@if ($errors->any())
+    <div class="max-w-5xl mx-auto mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl shadow-sm">
+        <ul class="list-disc list-inside  space-y-1">
+            @foreach ($errors->all() as $error)
+                <li>🔴 {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<div class="max-w-5xl	 mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-10">تعديل العقد</h2>
 
     <form action="{{ route('contracts.update', $contract) }}" method="POST" class="space-y-6">

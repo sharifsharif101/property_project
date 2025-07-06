@@ -13,16 +13,17 @@
                     <h3 class="box-title">قائمة العقارات</h3>
                 </div>
                 <div class="box-body">
-                    @if (session('success'))
-                    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-                        x-transition
-                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-                        role="alert">
-                        <strong class="font-bold">!</strong>
-                        <span class="block sm:inline">{{ session('success') }}</span>
-                    </div>
-                    @endif
+                @if (session('success'))
+    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-lg shadow">
+        {{ session('success') }}
+    </div>
+@endif
 
+@if (session('error'))
+    <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-lg shadow">
+        {{ session('error') }}
+    </div>
+@endif
                     <table id="example2" class=" table table-bordered table-hover table-striped  ">
                         <thead>
                             <tr>
