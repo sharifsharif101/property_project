@@ -24,16 +24,17 @@
             <div class="mb-3">
                 <label for="rent_installment_id" class="form-label">القسط المستحق</label>
                 <select name="rent_installment_id" id="rent_installment_id" class="form-select @error('rent_installment_id') is-invalid @enderror" required>
-                    <option value="">-- اختر القسط --</option>
-                    @foreach($unpaidInstallments as $installment)
-                        <option value="{{ $installment->id }}" {{ old('rent_installment_id') == $installment->id ? 'selected' : '' }}>
-                            {{-- مثال على نص منسق: اسم المستأجر - تاريخ الاستحقاق - المبلغ المتبقي --}}
-                            {{ $installment->contract->tenant->first_name }} {{ $installment->contract->tenant->last_name }} |
-                            تاريخ: {{ $installment->due_date }} |
-                            المتبقي: {{ $installment->amount_due + $installment->late_fee - $installment->amount_paid }} ريال
-                        </option>
-                    @endforeach
-                </select>
+    <option value="">-- اختر القسط --</option>
+    @foreach($unpaidInstallments as $installment)
+        {{-- ✅✅✅ السطر التالي هو الذي تم تعديله ✅✅✅ --}}
+        <option value="{{ $installment->id }}" {{ (isset($selectedInstallmentId) && $selectedInstallmentId == $installment->id) ? 'selected' : '' }}>
+            {{-- مثال على نص منسق: اسم المستأجر - تاريخ الاستحقاق - المبلغ المتبقي --}}
+            {{ $installment->contract->tenant->first_name ?? 'N/A' }} {{ $installment->contract->tenant->last_name ?? '' }} |
+            تاريخ: {{ $installment->due_date }} |
+            المتبقي: {{ number_format($installment->amount_due + $installment->late_fee - $installment->amount_paid, 2) }} ريال
+        </option>
+    @endforeach
+</select>
                 @error('rent_installment_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

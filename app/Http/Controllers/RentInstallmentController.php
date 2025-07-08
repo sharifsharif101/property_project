@@ -4,21 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\RentInstallment; // <-- استيراد النموذج
+ 
 
+ 
+ 
 class RentInstallmentController extends Controller
 {
-   public function index()
-    {
-        // 1. جلب البيانات من قاعدة البيانات
-        $installments = RentInstallment::with([
-                'contract.tenant', // جلب بيانات المستأجر المرتبطة بالعقد
-                'contract.property', // جلب بيانات العقار المرتبطة بالعقد
-                'contract.unit' // جلب بيانات الوحدة المرتبطة بالعقد
-            ])
-            ->latest('due_date') // 2. ترتيبها من الأحدث إلى الأقدم بناءً على تاريخ الاستحقاق
-            ->paginate(15); // 3. عرض 15 سجل فقط في كل صفحة
+ 
+    public function index(Request $request)
+{
+    $query = RentInstallment::query();
 
-        // 4. إرسال البيانات إلى الـ View
-        return view('installments.index', compact('installments'));
+    if ($request->has('search_ref') && $request->filled('search_ref')) {
+        
+        $searchTerm = $request->input('search_ref');
+
+        // ▼▼▼ هذا هو الجزء الذي تم تحسينه ▼▼▼
+        $query->where(function ($q) use ($searchTerm) {
+            // نبحث في الرقم المرجعي للعقد
+            $q->whereHas('contract', function ($subQuery) use ($searchTerm) {
+                $subQuery->where('reference_number', 'like', '%' . $searchTerm . '%');
+            })
+            // أو نبحث في اسم المستأجر
+            ->orWhereHas('contract.tenant', function ($subQuery) use ($searchTerm) {
+                $subQuery->where('first_name', 'like', '%' . $searchTerm . '%')
+                         ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
+                         ->orWhere('phone', 'like', '%' . $searchTerm . '%'); // يمكن إضافة رقم الهاتف أيضاً
+            });
+        });
+        // ▲▲▲ نهاية الجزء المحسّن ▲▲▲
     }
+
+    $installments = $query->with([
+            'contract.tenant', 
+            'contract.property',
+            'contract.unit'
+        ])
+        ->latest('due_date')
+        ->paginate(15)
+        ->appends($request->query()); 
+
+    return view('installments.index', compact('installments'));
+}
+
+ public function accordionView()
+    {
+        // نستخدم نفس الاستعلام بالضبط
+        $installments = RentInstallment::with(['contract.tenant', 'contract.property', 'contract.unit'])
+            ->latest('due_date')
+            ->paginate(15);
+
+        // لكننا نرسل البيانات إلى ملف view جديد
+        return view('installments.accordion', compact('installments'));
+    }
+
 }

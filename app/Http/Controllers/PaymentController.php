@@ -19,7 +19,7 @@ class PaymentController extends Controller
     /**
      * عرض نموذج إضافة دفعة جديدة
      */
-    public function create()
+   public function create(Request $request) 
     {
         // جلب جميع الأقساط التي لم تُدفع بالكامل
         // يفضل تحسين هذا الاستعلام في تطبيق حقيقي (مثل إضافة pagination)
@@ -27,8 +27,9 @@ class PaymentController extends Controller
             ->whereIn('status', ['Due', 'Partially Paid', 'Overdue'])
             ->orderBy('due_date', 'asc')
             ->get();
+    $selectedInstallmentId = $request->query('installment_id');
 
-        return view('payments.create', compact('unpaidInstallments'));
+    return view('payments.create', compact('unpaidInstallments', 'selectedInstallmentId'));
     }
 
     /**

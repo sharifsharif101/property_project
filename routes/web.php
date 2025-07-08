@@ -106,3 +106,5 @@ Route::get('/payments/create', [PaymentController::class, 'create'])->name('paym
 Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
 
 Route::get('/installments', [RentInstallmentController::class, 'index'])->name('installments.index');
+
+Route::get('/installments/list', [RentInstallmentController::class, 'accordionView'])->name('installments.accordion');
