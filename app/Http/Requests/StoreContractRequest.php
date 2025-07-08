@@ -13,25 +13,36 @@ class StoreContractRequest extends FormRequest
     }
 
  
-    public function rules(): array
-    {
-            $contractId = $this->route('contract')?->id;
+   public function rules(): array
+{
+    $contractId = $this->route('contract')?->id;
 
-       return [
-            'tenant_id' => 'required|exists:tenants,id',
-            'unit_id' => 'required|exists:units,id',
-            'property_id' => 'required|exists:properties,property_id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            'rent_amount' => 'required|numeric|min:0.01',
-            'rent_type' => 'required|in:daily,weekly,monthly,yearly',
-            'security_deposit' => 'nullable|numeric|min:0',
-              'reference_number' => 'required|unique:contracts,reference_number,' . $contractId,
-            'status' => 'required|in:active,terminated,cancelled,draft',
-            'termination_reason' => 'nullable|in:late_payment,property_damage,tenant_request,landlord_request,contract_expiry,other',
-            'termination_notes' => 'nullable|string',
+    $rules = [
+        'tenant_id' => 'required|exists:tenants,id',
+        'unit_id' => 'required|exists:units,id',
+        'property_id' => 'required|exists:properties,property_id',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after:start_date',
+        'rent_amount' => 'required|numeric|min:0.01',
+        'rent_type' => 'required|in:daily,weekly,monthly,yearly',
+        'security_deposit' => 'nullable|numeric|min:0',
+        'reference_number' => 'required|unique:contracts,reference_number,' . $contractId,
+        'status' => 'required|in:active,terminated,cancelled,draft',
+        'termination_reason' => 'nullable|in:late_payment,property_damage,tenant_request,landlord_request,contract_expiry,other',
+        'termination_notes' => 'nullable|string',
     ];
+
+    // إذا الطلب إنشاء عقد (POST method)، الملف مطلوب
+    if ($this->isMethod('post')) {
+        $rules['contract_file'] = 'required|file|mimes:pdf|max:5120'; // 5MB
     }
+    // إذا التعديل (PUT/PATCH) فالملف اختياري
+    elseif ($this->isMethod('put') || $this->isMethod('patch')) {
+        $rules['contract_file'] = 'nullable|file|mimes:pdf|max:5120';
+    }
+
+    return $rules;
+}
  public function withValidator($validator)
 {
     $validator->after(function ($validator) {

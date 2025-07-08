@@ -124,13 +124,21 @@ class UnitController extends Controller
 
         return redirect()->route('units.index')->with('success', 'تم إضافة الوحدات بنجاح.');
     }
-    public function edit($id)
-    {
-        $unit = Unit::findOrFail($id);
-        $properties = Property::all(); // جلب جميع العقارات
+public function edit(Unit $unit)
+{
+    // التحقق من العقود المرتبطة
+    $hasRestrictedContract = $unit->contracts()->whereIn('status', ['active', 'draft'])->exists();
 
-        return view('units.edit', compact('unit', 'properties'));
+    if ($hasRestrictedContract) {
+        return redirect()->route('units.index')
+            ->with('error', 'لا يمكن تعديل الوحدة لأنها مرتبطة بعقد نشط أو مسودة.');
     }
+
+    // جلب جميع العقارات لاستخدامها في النموذج
+    $properties = Property::all();
+
+    return view('units.edit', compact('unit', 'properties'));
+}
     public function show($id)
     {
         $unit = Unit::findOrFail($id);

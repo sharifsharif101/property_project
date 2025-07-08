@@ -82,12 +82,12 @@ public function destroy($id)
 
 public function getUnits($propertyId)
 {
-    
-  $units = Unit::where('property_id', $propertyId)
-    ->whereDoesntHave('contracts', function ($query) {
-        $query->whereIn('status', ['active', 'draft']);
-    })
-    ->get(['id', 'unit_number']);
+    $units = Unit::where('property_id', $propertyId)
+        ->whereDoesntHave('contracts', function ($query) {
+            $query->whereIn('status', ['active', 'draft']);
+        })
+        ->select('id', 'unit_number', 'status')
+        ->get();
 
     return response()->json($units);
 }

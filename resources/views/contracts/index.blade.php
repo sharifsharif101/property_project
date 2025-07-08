@@ -195,29 +195,7 @@
                     <td>
                         {{ $contract->tenant->first_name ?? '' }} {{ $contract->tenant->last_name ?? '' }}
                         
-                        @if(!$dateError && $hasValidDates)
-                            @if($isNotStarted)
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    <span>يبدأ العقد في {{ $startDate->format('Y-m-d') }}</span>
-                                </div>
-                            @elseif($isExpiringToday && $contract->status === 'active')
-                                <div class="alert alert-danger">
-                                    <i class="fa fa-exclamation-triangle"></i>
-                                    <span>ينتهي العقد اليوم</span>
-                                </div>
-                            @elseif($isExpiringSoon && $contract->status === 'active')
-                                <div class="alert alert-warning">
-                                    <i class="fa fa-exclamation-triangle"></i>
-                                    <span>ينتهي العقد خلال {{ $daysLeft }} {{ $daysLeft == 1 ? 'يوم' : 'أيام' }}</span>
-                                </div>
-                            @elseif($isExpired && $contract->status === 'active')
-                                <div class="alert alert-danger">
-                                    <i class="fa fa-exclamation-triangle"></i>
-                                    <span>العقد منتهي - يحتاج تحديث الحالة</span>
-                                </div>
-                            @endif
-                        @endif
+                        
                     </td>
                     
                     <td>{{ $contract->property->name ?? '---' }}</td>
@@ -262,6 +240,24 @@
                             @method('DELETE')
                             <button type="submit" class="btn-delete">حذف</button>
                         </form>
+                         @if($hasValidDates && !$dateError)
+    @if($contract->status === 'active')
+        @if($daysLeft > 0)
+            <div style="margin-top: 6px; padding: 4px 8px; background-color: #d1ecf1; color: #0c5460; border-radius: 4px; font-size: 13px;">
+                متبقي {{ $daysLeft }} {{ $daysLeft == 1 ? 'يوم' : 'أيام' }} على نهاية العقد
+            </div>
+        @elseif($daysLeft == 0)
+            <div style="margin-top: 6px; padding: 4px 8px; background-color: #f8d7da; color: #721c24; border-radius: 4px; font-size: 13px;">
+                ينتهي العقد اليوم
+            </div>
+        @elseif($daysLeft < 0)
+            <div style="margin-top: 6px; padding: 4px 8px; background-color: #f8d7da; color: #721c24; border-radius: 4px; font-size: 13px;">
+                انتهى الوقت منذ {{ abs($daysLeft) }} {{ abs($daysLeft) == 1 ? 'يوم' : 'أيام' }}
+            </div>
+        @endif
+    @endif
+@endif
+
                     </td>
  
                 </tr>
@@ -280,62 +276,6 @@
     </table>
 </div>
 
-{{-- إحصائيات سريعة --}}
-@if($contracts->count() > 0)
-    <div style="margin-top: 30px; text-align: center;">
-        @php
-            $activeCount = $contracts->where('status', 'active')->count();
-            $terminatedCount = $contracts->where('status', 'terminated')->count();
-            $cancelledCount = $contracts->where('status', 'cancelled')->count();
-            $draftCount = $contracts->where('status', 'draft')->count();
-            
-            // حساب العقود التي تنتهي قريباً (من العقود النشطة فقط)
-            $expiringSoonCount = 0;
-            foreach($contracts->where('status', 'active') as $contract) {
-                if ($contract->start_date && $contract->end_date) {
-                    try {
-                        $endDate = Carbon::parse($contract->end_date);
-                        $today = Carbon::today();
-                        $daysLeft = $today->diffInDays($endDate, false);
-                        
-                        if ($daysLeft <= 3 && $daysLeft >= 0) {
-                            $expiringSoonCount++;
-                        }
-                    } catch (Exception $e) {
-                        // تجاهل العقود ذات التواريخ غير الصحيحة
-                    }
-                }
-            }
-        @endphp
-        
-        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-            <div style="background: #d4edda; color: #155724; padding: 10px 20px; border-radius: 8px;">
-                <strong>العقود النشطة: {{ $activeCount }}</strong>
-            </div>
-            
-            @if($expiringSoonCount > 0)
-                <div style="background: #fff3cd; color: #856404; padding: 10px 20px; border-radius: 8px;">
-                    <strong>تنتهي قريباً: {{ $expiringSoonCount }}</strong>
-                </div>
-            @endif
-            
-            <div style="background: #e2e3e5; color: #383d41; padding: 10px 20px; border-radius: 8px;">
-                <strong>العقود المنتهية: {{ $terminatedCount }}</strong>
-            </div>
-            
-            @if($cancelledCount > 0)
-                <div style="background: #f8d7da; color: #721c24; padding: 10px 20px; border-radius: 8px;">
-                    <strong>العقود الملغية: {{ $cancelledCount }}</strong>
-                </div>
-            @endif
-            
-            @if($draftCount > 0)
-                <div style="background: #fff3cd; color: #856404; padding: 10px 20px; border-radius: 8px;">
-                    <strong>المسودات: {{ $draftCount }}</strong>
-                </div>
-            @endif
-        </div>
-    </div>
-@endif
+ 
 
 @endsection

@@ -35,5 +35,8 @@ public function property()
     'end_date' => 'datetime',
 ];
  
- 
+ public function contractFiles()
+{
+    return $this->hasMany(ContractFile::class);
+}
 }

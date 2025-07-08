@@ -20,7 +20,7 @@ class ContractObserver
         }
 
         // إذا كانت حالة العقد نشطة: اجعل الوحدة مؤجرة
-        if ($contract->status === 'active') {
+if (in_array($contract->status, ['active', 'draft'])) {
             $unit->status = 'rented';
             $unit->save();
         }

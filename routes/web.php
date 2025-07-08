@@ -5,6 +5,7 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\ContractFileController;
 
 Route::get('/home', function () {
     return view('home');  
@@ -91,6 +92,8 @@ Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name
 // Destroy - Delete a contract
 Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
 
+
+Route::get('/contracts/{contract}/file/download', [ContractController::class, 'downloadFile']) ->name('contract_files.download');
 //اختيار عقار معين يؤدي الى جلب كل الواحدات المرتبطه به 
 Route::get('/properties/{property}/units', [App\Http\Controllers\PropertyController::class, 'getUnits']);
 

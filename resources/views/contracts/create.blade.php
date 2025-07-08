@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <form action="{{ route('contracts.store') }}" method="POST" class="space-y-4">
+<form action="{{ route('contracts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
         {{-- المستأجر --}}
@@ -110,6 +110,17 @@
             </select>
         </div>
 
+
+    {{-- 🆕 رفع ملف العقد (PDF) --}}
+    <div>
+        <label class="block mb-1 font-medium text-gray-700">ملف العقد (PDF)</label>
+        <input type="file" name="contract_file" accept="application/pdf" required
+               class="w-full border p-2 rounded file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+        @error('contract_file')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
         {{-- سبب الإنهاء --}}
         <div>
             <label>سبب الإنهاء</label>
@@ -167,10 +178,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 unitSelect.innerHTML = '<option value="">اختر وحدة</option>';
+
+                const disabledStatuses = ['rented', 'reserved', 'under_maintenance', 'disabled'];
+
                 units.forEach(unit => {
                     const option = document.createElement('option');
                     option.value = unit.id;
                     option.textContent = `وحدة رقم ${unit.unit_number}`;
+
+                    if (disabledStatuses.includes(unit.status)) {
+                        option.disabled = true;
+                        option.textContent += ' (غير متاحة)';
+                    }
+
                     unitSelect.appendChild(option);
                 });
             })
@@ -181,5 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 
 @endsection

@@ -91,14 +91,22 @@ $statusLabels = [
                     </td>
                     <td>{{ $unit->created_at->format('Y-m-d') }}</td>
                     <td class="flex gap-2">
-                        <a href="{{ route('units.show', $unit->id) }}" 
-                           class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                           عرض
-                        </a>
-                        <a href="{{ route('units.edit', $unit->id) }}" 
-                           class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                           تعديل
-                        </a>
+           <a href="{{ route('units.show', $unit->id) }}"
+   class="inline-block px-4 py-2 bg-yellow-400 text-white font-semibold rounded-xl shadow-md hover:bg-yellow-500 transition duration-200">
+   عرض
+</a>
+                     
+@php
+    $hasRestrictedContract = $unit->contracts()->whereIn('status', ['active', 'draft'])->exists();
+@endphp
+
+@if($hasRestrictedContract)
+    <button class="btn btn-secondary opacity-50 cursor-not-allowed" disabled>تعديل</button>
+@else
+    <a href="{{ route('units.edit', $unit) }}" class="btn btn-primary">تعديل</a>
+@endif
+
+
                     </td>
                 </tr>
             @empty
@@ -154,14 +162,15 @@ $statusLabels = [
                                         <td>{{ $statusLabels[$unit->status] ?? $unit->status }}</td>
                                         <td>{{ $unit->created_at->format('Y-m-d') }}</td>
                                         <td class="flex gap-2">
-                                            <a href="{{ route('units.show', $unit->id) }}" 
-                                               class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                               عرض
-                                            </a>
-                                            <a href="{{ route('units.edit', $unit->id) }}" 
-                                               class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                               تعديل
-                                            </a>
+                                           <a href="{{ route('units.show', $unit->id) }}"
+   class="inline-block px-4 py-2 bg-yellow-400 text-white font-semibold rounded-xl shadow-md hover:bg-yellow-500 transition duration-200">
+   عرض
+</a>
+                                           @if($hasRestrictedContract)
+    <button class="btn btn-secondary opacity-50 cursor-not-allowed" disabled>تعديل</button>
+@else
+    <a href="{{ route('units.edit', $unit) }}" class="btn btn-primary">تعديل</a>
+@endif
                                         </td>
                                     </tr>
                                 @endforeach

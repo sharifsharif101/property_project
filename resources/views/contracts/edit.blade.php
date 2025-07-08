@@ -112,6 +112,27 @@
                    class="w-full p-3 border border-gray-300 rounded-xl bg-gray-100" readonly>
         </div>
 
+{{-- رفع ملف العقد (اختياري) --}}
+<div>
+    <label class="block mb-1 font-medium text-gray-700">تحديث ملف العقد (PDF)</label>
+
+    @if($contractFile ?? false)
+        <p class="mb-2">
+            العقد الحالي:
+            <a href="{{ route('contract_files.download', $contractFile->id) }}" target="_blank" class="text-blue-600 underline">
+                {{ $contractFile->original_file_name }}
+            </a>
+        </p>
+    @endif
+
+    <input type="file" name="contract_file" accept="application/pdf"
+           class="w-full border p-2 rounded file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+    @error('contract_file')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+</div>
+
+
         {{-- قيمة الإيجار --}}
         <div>
             <label for="rent_amount" class="block mb-2 font-medium text-gray-700">قيمة الإيجار</label>

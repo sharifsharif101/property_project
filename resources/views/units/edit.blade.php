@@ -32,7 +32,7 @@
                             <select name="property_id" id="property_id" class="form-control @error('property_id') is-invalid @enderror" required>
                                 <option value="">اختر العقار</option>
                                 @foreach($properties as $property)
-                                    <option value="{{ $property->id }}" {{ $unit->property_id == $property->property_id ? 'selected' : '' }}>
+                                    <option value="{{ $property->property_id }}" {{ $unit->property_id == $property->property_id ? 'selected' : '' }}>
                                         {{ $property->name }}
                                     </option>
                                 @endforeach
