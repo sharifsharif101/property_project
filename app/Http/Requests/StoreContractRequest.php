@@ -43,6 +43,15 @@ class StoreContractRequest extends FormRequest
 
     return $rules;
 }
+public function messages(): array
+{
+    return [
+        'contract_file.max' => 'حجم الملف كبير جدًا. يجب ألا يتجاوز 5 ميغابايت.',
+        'contract_file.mimes' => 'يجب أن يكون الملف من نوع PDF فقط.',
+        'contract_file.required' => 'حقل ملف العقد مطلوب.',
+        // يمكنك إضافة أي رسائل مخصصة أخرى هنا
+    ];
+}
  public function withValidator($validator)
 {
     $validator->after(function ($validator) {

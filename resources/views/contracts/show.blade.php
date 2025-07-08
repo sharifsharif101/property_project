@@ -84,6 +84,7 @@
             <div class="text-sm text-gray-500 mb-1">تاريخ الانتهاء</div>
             <div class="font-semibold">{{ \Carbon\Carbon::parse($contract->end_date)->format('Y-m-d') }}</div>
         </div>
+        
 
         <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
             <div class="text-sm text-gray-500 mb-1">مبلغ الإيجار</div>
@@ -116,6 +117,22 @@
             @endif
         </div>
     @endif
+    @php
+    $contractFile = $contract->contractFiles()->latest()->first();
+@endphp
+
+@if($contractFile)
+    <div class="mt-10 bg-blue-50 border border-blue-200 p-6 rounded-lg text-blue-900 shadow-sm">
+        <h2 class="text-xl font-semibold mb-3">📎 ملف العقد</h2>
+        <p class="mb-2">الملف المرفق: <strong>{{ $contractFile->original_file_name }}</strong></p>
+        <a href="{{ route('contract_files.download', $contract->id) }}"
+           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition duration-200"
+           target="_blank" download>
+            ⬇️ تحميل ملف العقد
+        </a>
+    </div>
+@endif
+
 
     {{-- أزرار التحكم --}}
     <div class="mt-10 flex gap-4">
@@ -138,6 +155,8 @@
     🗑 حذف
 </button>
         </form>
+
+        
     </div>
 </div>
 @endsection

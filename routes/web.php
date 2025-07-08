@@ -6,6 +6,9 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ContractFileController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RentInstallmentController; // تأكد من استيراد الكنترولر
+
 
 Route::get('/home', function () {
     return view('home');  
@@ -92,10 +95,14 @@ Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name
 // Destroy - Delete a contract
 Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
 
-
-Route::get('/contracts/{contract}/file/download', [ContractController::class, 'downloadFile']) ->name('contract_files.download');
+Route::get('/contracts/{contract}/file/download', [ContractController::class, 'downloadFile'])  ->name('contract_files.download');
 //اختيار عقار معين يؤدي الى جلب كل الواحدات المرتبطه به 
 Route::get('/properties/{property}/units', [App\Http\Controllers\PropertyController::class, 'getUnits']);
 
 
+/////////////////////////////////////// payments ..................
 
+Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+
+Route::get('/installments', [RentInstallmentController::class, 'index'])->name('installments.index');

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\ContractFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
+ use Illuminate\Support\Facades\Log;
 class ContractController extends Controller
 {
 
@@ -102,7 +102,7 @@ public function index()
     // تحديث بيانات العقد
 
 
- 
+
 public function update(StoreContractRequest $request, Contract $contract)
 {
     // تحقق من أن الوحدة تنتمي للعقار المحدد
@@ -123,28 +123,44 @@ public function update(StoreContractRequest $request, Contract $contract)
     if ($request->hasFile('contract_file')) {
         $uploadedFile = $request->file('contract_file');
 
-        // إنشاء اسم ملف فريد
         $fileName = (string) Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
 
-        // حفظ الملف في مجلد contract_files داخل storage/app
-        $path = $uploadedFile->storeAs('contract_files', $fileName);
+        $storedPath = $uploadedFile->storeAs('contract_files', $fileName);
 
-        // حذف الملف القديم من التخزين (إذا موجود)
+        if (!$storedPath) {
+            Log::error('فشل تحديث الملف أثناء تعديل العقد', [
+                'contract_id' => $contract->id,
+                'file_name' => $uploadedFile->getClientOriginalName(),
+                'mime_type' => $uploadedFile->getMimeType(),
+                'file_size' => $uploadedFile->getSize(),
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['contract_file' => 'فشل رفع الملف أثناء التحديث.']);
+        }
+
+        // حذف الملف القديم إذا تم حفظ الجديد بنجاح
         $oldFile = ContractFile::where('contract_id', $contract->id)->first();
         if ($oldFile) {
             Storage::delete($oldFile->storage_path);
             $oldFile->delete();
         }
 
-        // إضافة سجل ملف جديد في جدول contract_files
+        // إضافة سجل جديد
         ContractFile::create([
             'contract_id' => $contract->id,
             'original_file_name' => $uploadedFile->getClientOriginalName(),
-            'storage_path' => $path,
+            'storage_path' => $storedPath,
             'mime_type' => $uploadedFile->getMimeType(),
             'file_size' => $uploadedFile->getSize(),
             'file_hash' => hash_file('sha256', $uploadedFile->getPathname()),
-            // 'uploaded_by' => auth()->id(), // إذا تريد تخزين من رفع الملف
+        ]);
+
+        Log::info('تم تحديث ملف العقد بنجاح', [
+            'contract_id' => $contract->id,
+            'file_name' => $uploadedFile->getClientOriginalName(),
+            'path' => $storedPath,
         ]);
     }
 
@@ -169,16 +185,10 @@ public function destroy($id)
     return redirect()->route('contracts.index')
                      ->with('success', 'تم حذف العقد بنجاح.');
 }
-
- public function downloadFile(Contract $contract)
+  
+public function downloadFile(Contract $contract)
 {
-    // جلب ملف العقد الحالي المرتبط بهذا العقد (مثلاً ملف الإصدار الحالي)
-    $contractFile = ContractFile::where('contract_id', $contract->id)
-                                ->latest('created_at')
-                                ->first();
-
- 
-dd($contractFile);
+    $contractFile = $contract->contractFiles()->latest()->first();
 
     if (!$contractFile || !Storage::exists($contractFile->storage_path)) {
         abort(404, 'الملف غير موجود.');
@@ -186,4 +196,5 @@ dd($contractFile);
 
     return Storage::download($contractFile->storage_path, $contractFile->original_file_name);
 }
+
 }

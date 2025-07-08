@@ -39,4 +39,18 @@ public function property()
 {
     return $this->hasMany(ContractFile::class);
 }
+
+
+
+public function rentInstallments()
+{
+    return $this->hasMany(RentInstallment::class);
+}
+
+// العقد الواحد لديه العديد من الدفعات (لتسهيل التقارير الإجمالية)
+public function payments()
+{
+    return $this->hasMany(Payment::class);
+}
+
 }

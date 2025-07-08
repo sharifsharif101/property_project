@@ -32,7 +32,7 @@
 <div class="max-w-5xl	 mx-auto py-12 px-6 bg-white shadow-md rounded-3xl">
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-10">تعديل العقد</h2>
 
-    <form action="{{ route('contracts.update', $contract) }}" method="POST" class="space-y-6">
+    <form action="{{ route('contracts.update', $contract) }}" method="POST" class="space-y-6" enctype="multipart/form-data" >
         @csrf
         @method('PUT')
 
@@ -119,9 +119,9 @@
     @if($contractFile ?? false)
         <p class="mb-2">
             العقد الحالي:
-            <a href="{{ route('contract_files.download', $contractFile->id) }}" target="_blank" class="text-blue-600 underline">
-                {{ $contractFile->original_file_name }}
-            </a>
+    <a href="{{ route('contract_files.download', $contract->id) }}" target="_blank" class="text-blue-600 underline">
+    {{ $contractFile->original_file_name }}
+</a>
         </p>
     @endif
 
