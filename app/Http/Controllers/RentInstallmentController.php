@@ -41,8 +41,8 @@ class RentInstallmentController extends Controller
             'contract.unit'
         ])
         ->latest('due_date')
-        ->paginate(15)
-        ->appends($request->query()); 
+        ->get();
+
 
     return view('installments.index', compact('installments'));
 }

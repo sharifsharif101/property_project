@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
  <meta name="csrf-token" content="{{ csrf_token() }}">
+    @stack('styles')
 
 </head>
 
@@ -128,12 +129,36 @@
             { orderable: false, targets: 0 } // تعطيل الفرز في العمود الأول
         ]
         });
+          $('#installments-table').DataTable({
+            // خيارات لجعل الجدول أكثر احترافية
+            "paging": true,       // تفعيل تقسيم الصفحات
+            "lengthChange": true, // السماح للمستخدم باختيار عدد الصفوف (10, 25, 50, 100)
+            "searching": true,    // تفعيل حقل البحث الفوري
+            "ordering": true,     // السماح بالفرز عند الضغط على رأس العمود
+            "info": true,         // عرض معلومات "يتم عرض X من Y..."
+            "autoWidth": false,   // يفضل تعطيله لتجنب مشاكل العرض
+            "responsive": true,   // يجعل الجدول يتكيف مع الشاشات الصغيرة
+
+            // أهم إضافة: ترجمة الواجهة بالكامل إلى اللغة العربية
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json"
+            },
+            
+            // يمكنك تعيين العمود الافتراضي للفرز هنا
+            // مثلاً، الفرز حسب تاريخ الاستحقاق تنازلياً
+            "order": [[ 4, "desc" ]] // العمود الخامس (يبدأ العد من 0)، تنازلي
+        });
         });
     </script>
-    
+
+ 
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
    <script src="{{ asset('adminlte/js/units.js') }}"></script>
     <!-- AdminLTE dashboard demo -->
     <script src="{{ asset('adminlte/js/pages/dashboard.js') }}"></script>
     <script src="{{ asset('adminlte/js/demo.js') }}"></script>
+    @stack('scripts')
 </body>
 </html>

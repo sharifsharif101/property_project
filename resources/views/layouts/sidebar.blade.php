@@ -1,4 +1,4 @@
-<aside class="border-4 border-red main-sidebar" dir="ltr">
+ <aside class="border-4 border-red main-sidebar" dir="ltr">
     <script src="//unpkg.com/alpinejs" defer></script>
     <section class="sidebar">
         <div class="user-panel flex items-center px-4 py-3 space-x-3 rtl:space-x-reverse">
@@ -13,6 +13,21 @@
         </div>
 
         <ul class="sidebar-menu">
+
+            {{-- ▼▼▼ هذا هو الرابط الجديد للوحة التحكم ▼▼▼ --}}
+            <li class="border rounded-md mb-2">
+                <a href="{{ route('dashboard') }}"
+                    class="w-full flex items-center px-4 py-2 bg-gray-200 hover:bg-blue-600 hover:text-white rounded-md focus:outline-none">
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                        <i class="fa fa-tachometer-alt"></i>
+                        <span class="font-medium">لوحة التحكم</span>
+                    </div>
+                </a>
+            </li>
+            {{-- ▲▲▲ نهاية الرابط الجديد ▲▲▲ --}}
+
+            <div class="mt-7"></div>
+            
             {{-- قسم العقارات --}}
             <li x-data="{ open: false }" class="border rounded-md mb-2">
                 <button @click="open = !open"
@@ -41,7 +56,6 @@
                         </a>
                     </li>
                 </ul>
-                <div class="mt-7"></div>
             </li>
             
             {{-- قسم الشقق | الوحدات --}}
@@ -49,7 +63,7 @@
                 <button @click="open = !open"
                     class="w-full flex items-center justify-between px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none">
                     <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                        <i class="fa fa-edit"></i>
+                        <i class="fa fa-building"></i> {{-- أيقونة معدلة --}}
                         <span class="font-medium"> الشقق | الوحدات </span>
                     </div>
                     <svg :class="{ 'transform rotate-90': open }" class="w-4 h-4 transition-transform duration-300"
@@ -75,7 +89,7 @@
             </li>
 
             {{-- قسم المستأجرين --}}
-            <li x-data="{ open: false }" class="border rounded-md mt-5" style="margin-top: 15px">
+            <li x-data="{ open: false }" class="border rounded-md mt-5">
                 <button @click="open = !open"
                     class="w-full flex items-center justify-between px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none">
                     <div class="flex items-center space-x-2 rtl:space-x-reverse">
@@ -135,8 +149,8 @@
                     </li>
                 </ul>
             </li>
-
-            {{-- ▼▼▼ القسم الجديد يبدأ هنا ▼▼▼ --}}
+            
+            {{-- قسم المدفوعات والأقساط --}}
             <div class="mt-7"></div>
             <li x-data="{ open: false }" class="border rounded-md mt-5">
                 <button @click="open = !open"
@@ -166,7 +180,6 @@
                     </li>
                 </ul>
             </li>
-            {{-- ▲▲▲ القسم الجديد ينتهي هنا ▲▲▲ --}}
 
         </ul>
     </section>

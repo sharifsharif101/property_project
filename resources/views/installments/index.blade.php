@@ -1,11 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.app') 
 
-@push('styles')
-<style>
-    .table { min-width: 900px; }
-    .badge { font-size: 0.85rem; padding: 0.4em 0.7em; }
-</style>
-@endpush
+{{-- لا نحتاج قسم styles هنا لأننا أضفناه في ملف الـ Layout الرئيسي --}}
 
 @section('content')
 <div class="container-fluid mt-4">
@@ -18,21 +13,14 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <form action="{{ route('installments.index') }}" method="GET" class="d-flex">
-                        <input type="text" name="search_ref" class="form-control me-2" placeholder="ابحث بالرقم المرجعي للعقد..." value="{{ request('search_ref') }}">
-                        <button type="submit" class="btn btn-primary">بحث</button>
-                        @if(request('search_ref'))
-                            <a href="{{ route('installments.index') }}" class="btn btn-outline-secondary ms-2">مسح</a>
-                        @endif
-                    </form>
-                </div>
-            </div>
+            
+            {{-- ✅ 1. تم حذف نموذج البحث القديم من هنا --}}
 
             <div class="table-responsive">
-                <table id="example2" class="table table-hover align-middle" style="width:100%">
+                {{-- ✅ 2. تم إضافة id="installments-table" للجدول --}}
+                <table id="installments-table" class="table table-hover align-middle" style="width:100%">
                     <thead class="table-light">
+                        {{-- رؤوس الأعمدة تبقى كما هي --}}
                         <tr class="text-secondary">
                             <th>#</th>
                             <th>المستأجر</th>
@@ -47,6 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- الحلقة لعرض البيانات تبقى كما هي --}}
                         @forelse($installments as $installment)
                         <tr>
                             <td>{{ $installment->id + 10000 }}</td>
@@ -101,21 +90,46 @@
                         <tr>
                             <td colspan="10" class="text-center text-muted py-5">
                                 <i class="bi bi-journal-x fs-1"></i>
-                                <h4 class="mt-3">لا توجد نتائج تطابق بحثك.</h4>
-                                <p>جرّب البحث بكلمة أخرى أو <a href="{{ route('installments.index') }}" class="btn btn-outline-secondary btn-sm">امسح البحث</a>.</p>
+                                <h4 class="mt-3">لا توجد أقساط لعرضها حالياً.</h4>
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{-- ✅ 3. تم حذف روابط Pagination الخاصة بـ Laravel --}}
             
-            @if ($installments->hasPages())
-                <div class="mt-4 d-flex justify-content-center">
-                    {{ $installments->links() }}
-                </div>
-            @endif
         </div>
     </div>
 </div>
 @endsection
+
+{{-- ✅✅✅ هذا هو كود JavaScript الذي سيفعل كل شيء ✅✅✅ --}}
+@push('scripts')
+<script>
+    // ننتظر حتى يتم تحميل الصفحة بالكامل
+    $(document).ready(function() {
+        // نستهدف الجدول بالـ ID الذي أعطيناه له
+        $('#installments-table').DataTable({
+            // خيارات لجعل الجدول أكثر احترافية
+            "paging": true,       // تفعيل تقسيم الصفحات
+            "lengthChange": true, // السماح للمستخدم باختيار عدد الصفوف (10, 25, 50, 100)
+            "searching": true,    // تفعيل حقل البحث الفوري
+            "ordering": true,     // السماح بالفرز عند الضغط على رأس العمود
+            "info": true,         // عرض معلومات "يتم عرض X من Y..."
+            "autoWidth": false,   // يفضل تعطيله لتجنب مشاكل العرض
+            "responsive": true,   // يجعل الجدول يتكيف مع الشاشات الصغيرة
+
+            // أهم إضافة: ترجمة الواجهة بالكامل إلى اللغة العربية
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json"
+            },
+            
+            // يمكنك تعيين العمود الافتراضي للفرز هنا
+            // مثلاً، الفرز حسب تاريخ الاستحقاق تنازلياً
+            "order": [[ 4, "desc" ]] // العمود الخامس (يبدأ العد من 0)، تنازلي
+        });
+    });
+</script>
+@endpush

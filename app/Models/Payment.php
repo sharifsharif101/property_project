@@ -31,4 +31,14 @@ class Payment extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+
+     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'payment_date' => 'date', // أخبر Laravel أن هذا الحقل هو من نوع تاريخ
+    ];
+ 
 }

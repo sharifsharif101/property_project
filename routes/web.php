@@ -6,6 +6,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ContractFileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RentInstallmentController; // تأكد من استيراد الكنترولر
 
@@ -108,3 +109,5 @@ Route::post('/payments', [PaymentController::class, 'store'])->name('payments.st
 Route::get('/installments', [RentInstallmentController::class, 'index'])->name('installments.index');
 
 Route::get('/installments/list', [RentInstallmentController::class, 'accordionView'])->name('installments.accordion');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
