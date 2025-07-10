@@ -9,40 +9,40 @@ use InvalidArgumentException;
 
 class PaymentService
 {
-    /**
-     * يسجل دفعة جديدة ويقوم بتحديث القسط المرتبط بها.
-     * @param array $data بيانات الدفعة المدخلة من النموذج.
-     * @return Payment
-     */
-    public function recordPayment(array $data): Payment
+    public function recordPayment(array $data)
     {
-        // استخدام Transaction لضمان سلامة البيانات
         return DB::transaction(function () use ($data) {
             $installment = RentInstallment::findOrFail($data['rent_installment_id']);
 
-            // تحقق من أن المبلغ المدفوع لا يتجاوز المبلغ المتبقي
-            $remaining_due = $installment->amount_due + $installment->late_fee - $installment->amount_paid;
-            if ($data['amount'] > $remaining_due) {
-                // يمكنك التعامل مع هذا الخطأ بطريقة أفضل، لكننا سنلقي استثناءً الآن
+            $paidAmount = (float) $data['amount'];
+
+            // ✅✅✅ حل مشكلة الأرقام العشرية: نقارن بعد التقريب ✅✅✅
+            $remainingAmount = $installment->amount_due + $installment->late_fee - $installment->amount_paid;
+            
+            // اسمح بهامش خطأ بسيط جداً أو استخدم التقريب
+            if (round($paidAmount, 2) > round($remainingAmount, 2)) {
                 throw new InvalidArgumentException('المبلغ المدفوع أكبر من المبلغ المتبقي على القسط.');
             }
 
-            // 1. إنشاء سجل الدفعة
-            $payment = Payment::create([
+            // 1. تسجيل الدفعة نفسها
+            Payment::create([
+                'contract_id' => $installment->contract_id,
                 'rent_installment_id' => $installment->id,
-                'contract_id' => $installment->contract_id, // لسهولة الاستعلام
+                'amount' => $paidAmount,
                 'payment_date' => $data['payment_date'],
-                'amount' => $data['amount'],
                 'payment_method' => $data['payment_method'],
-                'transaction_reference' => $data['transaction_reference'] ?? null,
-                'notes' => $data['notes'] ?? null,
+                'transaction_reference' => $data['transaction_reference'],
+                'notes' => $data['notes'],
             ]);
 
             // 2. تحديث القسط
-            $installment->amount_paid += $payment->amount;
+            $installment->amount_paid += $paidAmount;
 
-            // 3. تحديث حالة القسط
-            if ($installment->amount_paid >= ($installment->amount_due + $installment->late_fee)) {
+            // حساب المتبقي من جديد بعد الدفعة
+            $newRemaining = $installment->amount_due + $installment->late_fee - $installment->amount_paid;
+
+            // تحديث حالة القسط
+            if (round($newRemaining, 2) <= 0) {
                 $installment->status = 'Paid';
             } else {
                 $installment->status = 'Partially Paid';
@@ -50,7 +50,7 @@ class PaymentService
 
             $installment->save();
 
-            return $payment;
+            return $installment;
         });
     }
 }

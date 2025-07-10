@@ -19,6 +19,7 @@ class Payment extends Model
         'transaction_reference',
         'notes',
     ];
+    
 
     // كل دفعة تخص قسطاً واحداً
     public function rentInstallment()

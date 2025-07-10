@@ -3,41 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\RentInstallment;
 use App\Services\PaymentService;
- 
+use InvalidArgumentException;
+use Exception; // تأكد من استيراد Exception
+
 class PaymentController extends Controller
 {
-     protected $paymentService;
+    protected $paymentService;
 
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
     }
 
-    /**
-     * عرض نموذج إضافة دفعة جديدة
-     */
-   public function create(Request $request) 
+    public function create(Request $request) 
     {
-        // جلب جميع الأقساط التي لم تُدفع بالكامل
-        // يفضل تحسين هذا الاستعلام في تطبيق حقيقي (مثل إضافة pagination)
         $unpaidInstallments = RentInstallment::with('contract.tenant')
             ->whereIn('status', ['Due', 'Partially Paid', 'Overdue'])
             ->orderBy('due_date', 'asc')
             ->get();
-    $selectedInstallmentId = $request->query('installment_id');
+            
+        $selectedInstallmentId = $request->query('installment_id');
 
-    return view('payments.create', compact('unpaidInstallments', 'selectedInstallmentId'));
+        return view('payments.create', compact('unpaidInstallments', 'selectedInstallmentId'));
     }
 
-    /**
-     * تخزين دفعة جديدة في قاعدة البيانات
-     */
     public function store(Request $request)
     {
-        // 1. التحقق من صحة المدخلات
         $validatedData = $request->validate([
             'rent_installment_id' => 'required|exists:rent_installments,id',
             'amount' => 'required|numeric|min:0.01',
@@ -47,18 +40,18 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // 2. استدعاء الـ Service لمعالجة الدفعة
         try {
             $this->paymentService->recordPayment($validatedData);
-        } catch (\InvalidArgumentException $e) {
-            // في حالة كان المبلغ المدفوع أكبر من المستحق
+            return redirect()->route('payments.create')->with('success', 'تم تسجيل الدفعة بنجاح!');
+        
+        } catch (InvalidArgumentException $e) {
+            // هذا الخطأ يحدث فقط إذا كان المبلغ أكبر من المستحق
             return back()->withInput()->withErrors(['amount' => $e->getMessage()]);
-        } catch (\Exception $e) {
-            // لأي خطأ آخر غير متوقع
-            return back()->with('error', 'حدث خطأ غير متوقع أثناء تسجيل الدفعة.');
+        
+        } catch (Exception $e) {
+            // ✅✅✅ هنا المكان الصحيح لوضع كود التصحيح ✅✅✅
+            // سيقوم هذا السطر بطباعة تفاصيل الخطأ الكاملة وإيقاف تنفيذ البرنامج
+            dd($e);
         }
-
-        // 3. إعادة التوجيه مع رسالة نجاح
-        return redirect()->route('payments.create')->with('success', 'تم تسجيل الدفعة بنجاح!');
     }
 }

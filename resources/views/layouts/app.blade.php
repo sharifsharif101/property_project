@@ -1,164 +1,83 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>@yield('title', 'عنوان الصفحة')</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="//unpkg.com/alpinejs" defer></script>
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ asset('adminlte/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@yield('title', 'لوحة التحكم')</title>
 
-    <!-- AdminLTE -->
-    <link rel="stylesheet" href="{{ asset('adminlte/css/AdminLTE.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/css/skins/_all-skins.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/iCheck/flat/blue.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/morris/morris.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/datepicker/datepicker3.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/daterangepicker/daterangepicker-bs3.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- RTL & Fonts -->
-    <link rel="stylesheet" href="{{ asset('adminlte/fonts/fonts-fa.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/css/bootstrap-rtl.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('adminlte/css/rtl.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('adminlte/plugins/datatables/dataTables.bootstrap.css') }}">
+    <!-- ✅ DataTables with Tailwind CSS Theme (CSS) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.tailwindcss.css">
 
-    <!-- Vite (إذا كنت تستخدم Tailwind أو غيره) -->
-    @vite('resources/css/app.css')
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .submenu { max-height: 0; transition: max-height 0.3s ease-out; }
 
-    <!-- دعم HTML5 للمتصفحات القديمة -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
- <meta name="csrf-token" content="{{ csrf_token() }}">
-    @stack('styles')
-
+        /* Custom styles to improve DataTables + Tailwind look */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 1.5rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            margin: 0 0.25rem !important;
+            padding: 0.5rem 0.75rem !important;
+        }
+    </style>
 </head>
 
-<body class="hold-transition skin-blue  ">
-    <div class="wrapper">
-
-
-   @include('layouts.nav')
-        @include('layouts.sidebar')
+<body class="bg-gray-100 flex min-h-screen">
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden"></div>
+    
+    @include('layouts.sidebar')
+   
+    <div class="flex-grow flex flex-col">
+        @include('layouts.nav')
         
-        <div class="content-wrapper">
- 
-     
-            <section class="content">
+        <main class="p-8">
             @yield('content')
-           </section><!-- /.content -->
-        </div>
+        </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('adminlte/plugins/jQuery/jQuery-2.1.4.min.js') }}"></script>
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-    
+    {{-- ====================================================== --}}
+    {{--                JAVASCRIPTS SECTION                     --}}
+    {{-- ====================================================== --}}
+
+    <!-- jQuery (required by DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+    <!-- ✅ DataTables with Tailwind CSS Theme (JS) -->
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.tailwindcss.js"></script>
+
+    <!-- Layout-specific scripts (Sidebar logic) -->
     <script>
-        $.widget.bridge('uibutton', $.ui.button);
-    </script>
-
-    <!-- Bootstrap -->
-    <script src="{{ asset('adminlte/bootstrap/js/bootstrap.min.js') }}"></script>
-
-    <!-- Morris.js charts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="{{ asset('adminlte/plugins/morris/morris.min.js') }}"></script>
-
-    <!-- Sparkline -->
-    <script src="{{ asset('adminlte/plugins/sparkline/jquery.sparkline.min.js') }}"></script>
-
-    <!-- jvectormap -->
-    <script src="{{ asset('adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js') }}"></script>
-    <script src="{{ asset('adminlte/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-
-    <!-- jQuery Knob Chart -->
-    <script src="{{ asset('adminlte/plugins/knob/jquery.knob.js') }}"></script>
-
-    <!-- daterangepicker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-    <script src="{{ asset('adminlte/plugins/daterangepicker/daterangepicker.js') }}"></script>
-
-    <!-- datepicker -->
-    <script src="{{ asset('adminlte/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
-
-    <!-- Bootstrap WYSIHTML5 -->
-    <script src="{{ asset('adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js') }}"></script>
-
-    <!-- Slimscroll -->
-    <script src="{{ asset('adminlte/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
-
-    <!-- FastClick -->
-    <script src="{{ asset('adminlte/plugins/fastclick/fastclick.min.js') }}"></script>
-
-    <!-- AdminLTE App -->
-    <script src="{{ asset('adminlte/js/app.min.js') }}"></script>
-
-    <!-- DataTables -->
-    <script src="{{ asset('adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('adminlte/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
-
-    <script>
-        $(function () {
-            $('#example2').DataTable({
-                paging: true,
-                lengthChange: false,
-                searching: false,
-                ordering: true,
-                info: true,
-                autoWidth: true
+        // Your existing sidebar toggle scripts...
+        const sidebar = document.getElementById("sidebar");
+        const menuBtn = document.getElementById("menuBtn");
+        const overlay = document.getElementById("overlay");
+        if (menuBtn && sidebar && overlay) {
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("translate-x-full");
+                overlay.classList.toggle("hidden");
             });
-                   $('#fullTable').DataTable({
-            paging: true,
-            lengthChange: false,
-            searching: false,
-            ordering: true,
-            info: true,
-            scrollY: '300px',
-            autoWidth: true,
-               columnDefs: [
-            { orderable: false, targets: 0 } // تعطيل الفرز في العمود الأول
-        ]
-        });
-          $('#installments-table').DataTable({
-            // خيارات لجعل الجدول أكثر احترافية
-            "paging": true,       // تفعيل تقسيم الصفحات
-            "lengthChange": true, // السماح للمستخدم باختيار عدد الصفوف (10, 25, 50, 100)
-            "searching": true,    // تفعيل حقل البحث الفوري
-            "ordering": true,     // السماح بالفرز عند الضغط على رأس العمود
-            "info": true,         // عرض معلومات "يتم عرض X من Y..."
-            "autoWidth": false,   // يفضل تعطيله لتجنب مشاكل العرض
-            "responsive": true,   // يجعل الجدول يتكيف مع الشاشات الصغيرة
-
-            // أهم إضافة: ترجمة الواجهة بالكامل إلى اللغة العربية
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json"
-            },
-            
-            // يمكنك تعيين العمود الافتراضي للفرز هنا
-            // مثلاً، الفرز حسب تاريخ الاستحقاق تنازلياً
-            "order": [[ 4, "desc" ]] // العمود الخامس (يبدأ العد من 0)، تنازلي
-        });
-        });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.add("translate-x-full");
+                overlay.classList.add("hidden");
+            });
+        }
     </script>
-
  
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-   <script src="{{ asset('adminlte/js/units.js') }}"></script>
-    <!-- AdminLTE dashboard demo -->
-    <script src="{{ asset('adminlte/js/pages/dashboard.js') }}"></script>
-    <script src="{{ asset('adminlte/js/demo.js') }}"></script>
+    <!-- ✅ This is where scripts from child pages will be injected -->
     @stack('scripts')
 </body>
 </html>

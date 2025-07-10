@@ -1,326 +1,152 @@
-@extends('layouts.app')
+ @extends('layouts.app')
+
+@section('title', 'قائمة المستأجرين')
+
 @section('content')
-
-
-   <style>
-        /* تحسينات شاملة للجدول */
-        .tenants-table-container {
-            overflow-x: auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            margin: 20px;
-        }
-        
-        .tenants-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 0.9em;
-            min-width: 1000px;
-        }
-        
-        .tenants-table th {
-            background: #2c3e50;
-            color: white;
-            font-weight: 600;
-            padding: 15px 12px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-        }
-        
-        .tenants-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            text-align: center;
-            vertical-align: middle;
-        }
-        
-        .tenants-table tr {
-            transition: all 0.2s ease;
-        }
-        
-        .tenants-table tr:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .table-header {
-            font-size: 1em;
-            letter-spacing: 0.5px;
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .table-cell {
-            color: #34495e;
-            font-size: 0.95em;
-        }
-        
-        .actions-cell {
-            width: 150px;
-        }
-        
-        .actions-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .action-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            color: white;
-        }
-        
-        .action-link.view {
-            background: #3498db;
-        }
-        
-        .action-link.edit {
-            background: #f39c12;
-        }
-        
-        .action-link.delete {
-            background: #e74c3c;
-        }
-        
-        .action-link:hover {
-            transform: scale(1.1);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .action-icon {
-            width: 16px;
-            height: 16px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 500;
-            min-width: 70px;
-        }
-        
-        .status-badge.active {
-            background: rgba(46, 204, 113, 0.2);
-            color: #27ae60;
-            border: 1px solid #27ae60;
-        }
-        
-        .status-badge.suspended {
-            background: rgba(231, 76, 60, 0.2);
-            color: #c0392b;
-            border: 1px solid #c0392b;
-        }
-        
-        .tenant-image-wrapper {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto;
-            overflow: hidden;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #eee;
-        }
-        
-        .tenant-image-wrapper:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tenant-id-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-        
-        .no-image {
-            display: inline-block;
-            padding: 5px 10px;
-            background: #f1f2f6;
-            border-radius: 4px;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        
-        /* تحسينات للعناوين */
-        .page-title {
-            padding: 20px 30px 0;
-            color: #2c3e50;
-            font-size: 1.8em;
-            font-weight: 600;
-        }
-        
-        /* زر إضافة جديد */
-        .add-tenant-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #27ae60;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 500;
-            margin: 0 30px 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
-        }
-        
-        .add-tenant-btn:hover {
-            background: #219653;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
-        }
-        
-        /* تحسينات متجاوبة */
-        @media (max-width: 1200px) {
-            .tenants-table-container {
-                margin: 10px;
-                padding: 15px;
-            }
-            
-            .tenants-table th,
-            .tenants-table td {
-                padding: 10px 8px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .tenants-table th,
-            .tenants-table td {
-                font-size: 0.85em;
-                padding: 8px 6px;
-            }
-            
-            .action-link {
-                width: 28px;
-                height: 28px;
-            }
-            
-            .action-icon {
-                width: 14px;
-                height: 14px;
-            }
-        }
-    </style>
-
-<div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-         <table id="tenantsTable" class="tenants-table table table-bordered table-hover table-striped">
-        <thead>
-            <tr>
-                <th class="table-header">الاسم</th>
-                <th class="table-header">الهاتف</th>
-                <th class="table-header">البريد</th>
-                <th class="table-header">نوع الهوية</th>
-                <th class="table-header">الدخل</th>
-             
-                <th class="table-header">صورة الهوية</th>
-                <th class="table-header">الإجراءات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($tenants as $tenant)
-            <tr class="table-row" data-status="{{ $tenant->status }}">
-                <td class="table-cell">
-                    {{ $tenant->first_name }} 
-                    {{ $tenant->father_name ? $tenant->father_name . ' ' : '' }}
-                    {{ $tenant->last_name }}
-                </td>
-                <td class="table-cell">{{ $tenant->phone }}</td>
-                <td class="table-cell">{{ $tenant->email ?? '-' }}</td>
-                @php
-                    $idTypes = [
-                        'national_card' => 'بطاقة وطنية',
-                        'passport' => 'جواز سفر',
-                        'residence' => 'إقامة',
-                    ];
-                @endphp
-                <td class="table-cell">
-                    {{ $idTypes[$tenant->id_type] ?? 'غير معروف' }}
-                </td>
-                <td class="table-cell">
-                    {{ $tenant->monthly_income ? number_format($tenant->monthly_income, 2) . ' ريال' : '-' }}
-                </td>
-           
-        <td class="table-cell">
-    @if($tenant->image_path)
-        <div class="tenant-image-wrapper">
-            <img src="{{ asset('storage/' . $tenant->image_path) }}" 
-                 alt="هوية {{ $tenant->first_name }}"
-                 class="tenant-id-image"
-                 onclick="showImageModal('{{ asset('storage/' . $tenant->image_path) }}')">
+{{-- We will wrap the entire content in an Alpine.js component for the modal functionality --}}
+<div x-data="{ showModal: false, modalImage: '' }" @keydown.escape.window="showModal = false">
+    
+    {{-- Session Messages --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition
+            class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
+            <p>{{ session('success') }}</p>
         </div>
-    @else
-        <span class="no-image">لا توجد</span>
     @endif
-</td>
-                <td class="table-cell actions-cell">
-                    <div class="actions-wrapper">
-                        <a href="{{ route('tenants.show', $tenant->id) }}" class="action-link view">
-                            <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </a>
-                        <a href="{{ route('tenants.edit', $tenant->id) }}" class="action-link edit">
-                            <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                        </a>
-                        <form action="{{ route('tenants.destroy', $tenant->id) }}" 
-                              method="POST" 
-                              class="delete-form"
-                              onsubmit="return confirm('هل أنت متأكد من حذف هذا المستأجر؟')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="action-link delete">
-                                <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="empty-table">
-                    <div class="empty-content animate__animated animate__pulse">
-                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        <p>لا يوجد مستأجرين حاليًا</p>
-                        <a href="{{ route('tenants.create') }}" class="add-first-tenant">إضافة المستأجر الأول</a>
-                    </div>
-                </td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+
+    <!-- Main Card -->
+    <div class="bg-white rounded-lg shadow-md">
+        <!-- Card Header -->
+        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="text-xl font-bold text-gray-800">قائمة المستأجرين</h2>
+            <a href="{{ route('tenants.create') }}" 
+               class="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1v-1z" /></svg>
+                <span>إضافة مستأجر جديد</span>
+            </a>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-6">
+            <div class="overflow-x-auto">
+                <table id="tenantsTable" class="w-full text-sm text-right">
+                    <thead class="bg-gray-50 text-gray-600">
+                        <tr>
+                            <th class="p-4 font-medium">الاسم الكامل</th>
+                            <th class="p-4 font-medium">بيانات الاتصال</th>
+                            <th class="p-4 font-medium">نوع الهوية</th>
+                            <th class="p-4 font-medium">الدخل الشهري</th>
+                            <th class="p-4 font-medium text-center">صورة الهوية</th>
+                            <th class="p-4 font-medium text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @forelse($tenants as $tenant)
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium text-gray-900 whitespace-nowrap">
+                                {{ $tenant->first_name }} {{ $tenant->father_name }} {{ $tenant->last_name }}
+                            </td>
+                            <td class="p-4 whitespace-nowrap">
+                                <div class="text-gray-700">{{ $tenant->phone }}</div>
+                                <div class="text-xs text-gray-500">{{ $tenant->email ?? '-' }}</div>
+                            </td>
+                            <td class="p-4 text-gray-600 whitespace-nowrap">
+                                @php
+                                    $idTypes = ['national_card' => 'بطاقة وطنية', 'passport' => 'جواز سفر', 'residence' => 'إقامة'];
+                                @endphp
+                                {{ $idTypes[$tenant->id_type] ?? 'غير معروف' }}
+                            </td>
+                            <td class="p-4 text-gray-600 whitespace-nowrap">
+                                {{ $tenant->monthly_income ? number_format($tenant->monthly_income, 0) . ' ريال' : '-' }}
+                            </td>
+                            <td class="p-4 text-center">
+                                @if($tenant->image_path)
+                                    <img @click="modalImage = '{{ asset('storage/' . $tenant->image_path) }}'; showModal = true"
+                                         src="{{ asset('storage/' . $tenant->image_path) }}" 
+                                         alt="هوية {{ $tenant->first_name }}"
+                                         class="w-16 h-10 object-cover rounded-md mx-auto cursor-pointer transition-transform hover:scale-110">
+                                @else
+                                    <span class="text-xs text-gray-400">لا توجد</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-x-2">
+                                    {{-- View Button --}}
+                                    <a href="{{ route('tenants.show', $tenant->id) }}" class="relative group">
+                                        <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full transition-colors hover:bg-blue-200">
+                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                                        </div>
+                                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">عرض</span>
+                                    </a>
+                                    {{-- Edit Button --}}
+                                    <a href="{{ route('tenants.edit', $tenant->id) }}" class="relative group">
+                                        <div class="w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-full transition-colors hover:bg-yellow-200">
+                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg>
+                                        </div>
+                                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">تعديل</span>
+                                    </a>
+                                    {{-- Delete Button --}}
+                                    <form action="{{ route('tenants.destroy', $tenant->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا المستأجر؟');" class="relative group">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-full transition-colors hover:bg-red-200">
+                                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                        </button>
+                                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">حذف</span>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-16 text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-16 h-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-3-5.197M15 21a9 9 0 00-3-1.95m-3 1.95a9 9 0 00-3-1.95m0 0A2.25 2.25 0 015.25 15.75v-1.5a2.25 2.25 0 012.25-2.25" /></svg>
+                                    <p class="mt-4 font-semibold">لا يوجد مستأجرون حالياً.</p>
+                                    <p class="text-sm">ابدأ بإضافة مستأجر جديد لعرض بياناته هنا.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div x-show="showModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
+        <!-- Modal Overlay -->
+        <div @click="showModal = false" class="fixed inset-0 bg-black/70"></div>
+        <!-- Modal Content -->
+        <div @click.away="showModal = false"
+             class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <img :src="modalImage" alt="عرض صورة الهوية" class="w-full h-auto rounded-t-lg">
+            <div class="p-4 text-center">
+                <button @click="showModal = false"
+                        class="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
 </div>
-
-
-
-
- 
-</div>
-
- 
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#tenantsTable').DataTable({
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/2.0.3/i18n/ar.json"
+                },
+                "columnDefs": [
+                    { "orderable": false, "targets": [4, 5] } // Disable sorting on image and actions
+                ]
+            });
+        });
+    </script>
+@endpush

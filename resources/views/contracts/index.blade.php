@@ -4,278 +4,138 @@
     use Carbon\Carbon;
 @endphp
 
+@section('title', 'قائمة العقود')
+
 @section('content')
-<style>
-    .table-containerr {
-        width:100%;
-        margin: auto;
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        min-width: 1000px;
-    }
-
-    th, td {
-        border: 1px solid #ccc;
-        padding: 14px;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    th {
-        background-color: #4a90e2;
-        color: white;
-    }
-
-    tr:hover {
-        background-color: #f0f8ff;
-    }
-
-    .status {
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 14px;
-    }
-
-    .active { background-color: #d4edda; color: #155724; }
-    .terminated { background-color: #e2e3e5; color: #383d41; }
-    .cancelled { background-color: #f8d7da; color: #721c24; }
-    .draft { background-color: #fff3cd; color: #856404; }
-
-    .action-btns a, .action-btns form {
-        display: inline-block;
-        margin: 0 4px;
-    }
-
-    .action-btns a, .action-btns button {
-        padding: 4px 8px;
-        font-size: 14px;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .btn-show { background-color: #e0f0ff; color: #0056b3; }
-    .btn-edit { background-color: #fff3cd; color: #856404; }
-    .btn-delete { background-color: #f8d7da; color: #721c24; }
-
-    /* أنماط للإشعارات */
-    .alert {
-        padding: 6px 10px;
-        border-radius: 6px;
-        margin-top: 6px;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-    }
-
-    .alert-warning {
-        color: #856404;
-        background-color: #fff3cd;
-        border: 1px solid #ffeeba;
-    }
-
-    .alert-info {
-        color: #0c5460;
-        background-color: #d1ecf1;
-        border: 1px solid #bee5eb;
-    }
-
-    .text-danger {
-        color: #dc3545;
-    }
-
-    .text-muted {
-        color: #6c757d;
-    }
-
-    .expired-row {
-        background-color: #f8f9fa;
-        opacity: 0.8;
-    }
-
-    .expiring-row {
-        background-color: #fff3cd;
-    }
-
-    .not-started-row {
-        background-color: #e7f3ff;
-    }
-</style>
-
-<h2 style="font-size: 28px; margin: 30px 0; text-align: center;">قائمة العقود ({{ $contracts->count() }})</h2>
-
-<div class="table-containerr">
-    <table>
-        <thead>
-            <tr>
-                <th>المستأجر</th>
-                <th>العقار</th>
-                <th>الوحدة</th>
-                <th>البداية</th>
-                <th>النهاية</th>
-                <th>الحالة</th>
-                <th>المرجع</th>
-                <th>الإجراءات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($contracts as $contract)
-                @php
-                    // التحقق من صحة التواريخ أولاً
-                    $hasValidDates = $contract->start_date && $contract->end_date;
-                    
-                    if ($hasValidDates) {
-                        try {
-                            $startDate = Carbon::parse($contract->start_date);
-                            $endDate = Carbon::parse($contract->end_date);
-                            $today = Carbon::today();
-                            
-                            // حساب الأيام المتبقية
-                            $daysLeft = $today->diffInDays($endDate, false);
-                            
-                            // تحديد حالة العقد بناءً على التاريخ (للعرض فقط)
-                            $isExpired = $endDate->isPast();
-                            $isExpiringSoon = $daysLeft <= 3 && $daysLeft > 0;
-                            $isExpiringToday = $daysLeft == 0;
-                            $isNotStarted = $startDate->isFuture();
-                            
-                            // تحديد فئة CSS للصف
-                            $rowClass = '';
-                            if ($isExpired) {
-                                $rowClass = 'expired-row';
-                            } elseif ($isExpiringSoon || $isExpiringToday) {
-                                $rowClass = 'expiring-row';
-                            } elseif ($isNotStarted) {
-                                $rowClass = 'not-started-row';
-                            }
-                            
-                            $dateError = false;
-                        } catch (Exception $e) {
-                            $dateError = true;
-                            $rowClass = '';
-                        }
-                    } else {
-                        $dateError = true;
-                        $rowClass = '';
-                    }
-                    
-                    // تحديد فئة ونص الحالة من قاعدة البيانات كما هي
-                    $statusClass = match ($contract->status) {
-                        'active' => 'active',
-                        'terminated' => 'terminated',
-                        'cancelled' => 'cancelled',
-                        'draft' => 'draft',
-                        default => ''
-                    };
-
-                    $statusLabel = match ($contract->status) {
-                        'active' => 'نشط',
-                        'terminated' => 'منتهي',
-                        'cancelled' => 'ملغي',
-                        'draft' => 'مسودة',
-                        default => 'غير معروف'
-                    };
-                @endphp
-                
-                <tr class="{{ $rowClass }}">
-                    <td>
-                        {{ $contract->tenant->first_name ?? '' }} {{ $contract->tenant->last_name ?? '' }}
-                        
-                        
-                    </td>
-                    
-                    <td>{{ $contract->property->name ?? '---' }}</td>
-                    <td>{{ $contract->unit->unit_number ?? '---' }}</td>
-                    
-                    <td>
-                        @if($hasValidDates)
-                            {{ $contract->start_date }}
-                            @if(!$dateError && $isNotStarted)
-                                <small class="text-muted">(لم يبدأ)</small>
-                            @endif
-                        @else
-                            <span class="text-danger">غير محدد</span>
-                        @endif
-                    </td>
-                    
-                    <td>
-                        @if($hasValidDates)
-                            {{ $contract->end_date }}
-                            @if(!$dateError && $isExpired && $contract->status === 'active')
-                                <small class="text-danger">(منتهي)</small>
-                            @endif
-                        @else
-                            <span class="text-danger">غير محدد</span>
-                        @endif
-                    </td>
-                    
-                    <td>
-                        <span class="status {{ $statusClass }}">{{ $statusLabel }}</span>
-                    </td>
-                    
-                    <td>{{ $contract->reference_number }}</td>
-                    
-                    <td class="action-btns">
-                        <a href="{{ route('contracts.show', $contract) }}" class="btn-show">عرض</a>
-                        <a href="{{ route('contracts.edit', $contract) }}" class="btn-edit">تعديل</a>
-                        
-                        <form action="{{ route('contracts.destroy', $contract) }}" method="POST" 
-                              onsubmit="return confirm('هل أنت متأكد من حذف هذا العقد؟')" 
-                              style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-delete">حذف</button>
-                        </form>
-                         @if($hasValidDates && !$dateError)
-    @if($contract->status === 'active')
-        @if($daysLeft > 0)
-            <div style="margin-top: 6px; padding: 4px 8px; background-color: #d1ecf1; color: #0c5460; border-radius: 4px; font-size: 13px;">
-                متبقي {{ $daysLeft }} {{ $daysLeft == 1 ? 'يوم' : 'أيام' }} على نهاية العقد
-            </div>
-        @elseif($daysLeft == 0)
-            <div style="margin-top: 6px; padding: 4px 8px; background-color: #f8d7da; color: #721c24; border-radius: 4px; font-size: 13px;">
-                ينتهي العقد اليوم
-            </div>
-        @elseif($daysLeft < 0)
-            <div style="margin-top: 6px; padding: 4px 8px; background-color: #f8d7da; color: #721c24; border-radius: 4px; font-size: 13px;">
-                انتهى الوقت منذ {{ abs($daysLeft) }} {{ abs($daysLeft) == 1 ? 'يوم' : 'أيام' }}
-            </div>
-        @endif
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
+            <p>{{ session('success') }}</p>
+        </div>
     @endif
-@endif
 
-                    </td>
- 
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8" style="text-align: center; padding: 40px;">
-                        <i class="fa fa-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
-                        <br>
-                        <strong>لا توجد عقود حالياً</strong>
-                        <br>
-                        <small class="text-muted">يمكنك إضافة عقد جديد من خلال الضغط على زر "إضافة عقد"</small>
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
+    <!-- Main Card -->
+    <div class="bg-white rounded-lg shadow-md">
+        <!-- Card Header -->
+        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 class="text-xl font-bold text-gray-800">قائمة العقود ({{ $contracts->count() }})</h2>
+            <a href="{{ route('contracts.create') }}" 
+               class="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" /></svg>
+                <span>إضافة عقد جديد</span>
+            </a>
+        </div>
 
- 
+        <!-- Card Body -->
+        <div class="p-6">
+            <div class="overflow-x-auto">
+                {{-- ✅ FONT SIZE IS NOW SMALLER --}}
+                <table id="contractsTable" class="w-full text-xs text-right">
+                    <thead class="bg-gray-50 text-gray-600">
+                        {{-- ✅ HEADER FONT IS NOW text-sm --}}
+                        <tr>
+                            <th class="p-3 font-medium text-sm">المستأجر</th>
+                            <th class="p-3 font-medium text-sm">العقار / الوحدة</th>
+                            <th class="p-3 font-medium text-sm">فترة العقد</th>
+                            <th class="p-3 font-medium text-sm text-center">الحالة</th>
+                            <th class="p-3 font-medium text-sm">المرجع</th>
+                            <th class="p-3 font-medium text-sm text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @forelse($contracts as $contract)
+                            @php
+                                $rowClass = '';
+                                $daysLeft = null;
+                                if ($contract->start_date && $contract->end_date) {
+                                    $endDate = Carbon::parse($contract->end_date);
+                                    $daysLeft = Carbon::today()->diffInDays($endDate, false);
 
+                                    if ($endDate->isPast()) $rowClass = 'border-r-4 border-red-400';
+                                    elseif ($daysLeft <= 30) $rowClass = 'border-r-4 border-yellow-400';
+                                    elseif (Carbon::parse($contract->start_date)->isFuture()) $rowClass = 'border-r-4 border-blue-400';
+                                }
+                                
+                                $statusConfig = [
+                                    'active' => ['label' => 'نشط', 'style' => 'bg-green-100 text-green-800'],
+                                    'terminated' => ['label' => 'منتهي', 'style' => 'bg-gray-200 text-gray-700'],
+                                    'cancelled' => ['label' => 'ملغي', 'style' => 'bg-red-100 text-red-800'],
+                                    'draft' => ['label' => 'مسودة', 'style' => 'bg-yellow-100 text-yellow-800'],
+                                ];
+                                $config = $statusConfig[$contract->status] ?? ['label' => $contract->status, 'style' => 'bg-gray-100'];
+                            @endphp
+                            
+                            <tr class="hover:bg-gray-50 {{ $rowClass }}">
+                                <td class="p-3 whitespace-nowrap">
+                                    {{-- Font is now text-sm for better hierarchy --}}
+                                    <div class="font-semibold text-sm text-gray-900">{{ $contract->tenant->first_name ?? '' }} {{ $contract->tenant->last_name ?? 'N/A' }}</div>
+                                    <div class="text-gray-500">{{ $contract->tenant->phone ?? '' }}</div>
+                                </td>
+                                <td class="p-3 whitespace-nowrap">
+                                    <div class="font-medium text-gray-800">{{ $contract->property->name ?? 'N/A' }}</div>
+                                    <div class="text-gray-500">وحدة: {{ $contract->unit->unit_number ?? 'N/A' }}</div>
+                                </td>
+                                <td class="p-3 whitespace-nowrap">
+                                    <div class="text-gray-800" dir="ltr">{{ $contract->start_date ? Carbon::parse($contract->start_date)->format('Y-m-d') : 'N/A' }}</div>
+                                    <div class="text-gray-500" dir="ltr">إلى {{ $contract->end_date ? Carbon::parse($contract->end_date)->format('Y-m-d') : 'N/A' }}</div>
+                                    @if($daysLeft !== null && $contract->status === 'active')
+                                        @if($daysLeft < 0)
+                                            <span class="mt-1 font-bold text-red-600">منتهي منذ {{ abs($daysLeft) }} يوم</span>
+                                        @elseif($daysLeft <= 30)
+                                            <span class="mt-1 font-bold text-yellow-700">متبقي {{ $daysLeft }} يوم</span>
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="p-3 text-center">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 font-semibold {{ $config['style'] }}">
+                                        {{ $config['label'] }}
+                                    </span>
+                                </td>
+                                <td class="p-3 text-gray-600 font-mono">{{ $contract->reference_number }}</td>
+                                <td class="p-3 text-center">
+                                    <div class="flex items-center justify-center gap-x-2">
+                                        <a href="{{ route('contracts.show', $contract) }}" class="relative group">
+                                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg></div>
+                                            <span class="tooltip">عرض</span>
+                                        </a>
+                                        <a href="{{ route('contracts.edit', $contract) }}" class="relative group">
+                                            <div class="w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-full hover:bg-yellow-200"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></div>
+                                            <span class="tooltip">تعديل</span>
+                                        </a>
+                                        <form action="{{ route('contracts.destroy', $contract) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا العقد؟')" class="relative group">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200">
+                                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                            </button>
+                                            <span class="tooltip">حذف</span>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-16 text-gray-500">
+                                    لا توجد عقود لعرضها حالياً.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+    {{-- Custom Tooltip Style --}}
+    <style>.tooltip { @apply absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap; }</style>
+
+    <script>
+        $(document).ready(function() {
+            $('#contractsTable').DataTable({
+                "language": { "url": "https://cdn.datatables.net/plug-ins/2.0.3/i18n/ar.json" },
+                "columnDefs": [ { "orderable": false, "targets": [5] } ],
+                "order": [[ 2, "desc" ]] 
+            });
+        });
+    </script>
+@endpush
