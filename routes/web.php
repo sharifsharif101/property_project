@@ -106,8 +106,18 @@ Route::get('/properties/{property}/units', [App\Http\Controllers\PropertyControl
 Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
 Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
 
+Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+
+Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+
+
+
 Route::get('/installments', [RentInstallmentController::class, 'index'])->name('installments.index');
 
-Route::get('/installments/list', [RentInstallmentController::class, 'accordionView'])->name('installments.accordion');
+ 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->name('payments.accordion');
+
+Route::get('/installments/accordion', [RentInstallmentController::class, 'accordionView'])->name('installments.accordion');

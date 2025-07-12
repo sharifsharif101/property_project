@@ -13,14 +13,26 @@
     <!-- Main Card -->
     <div class="bg-white rounded-lg shadow-md">
         <!-- Card Header -->
-        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h2 class="text-xl font-bold text-gray-800">سجل أقساط الإيجارات</h2>
-            <a href="{{ route('payments.create') }}" 
-               class="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-                <i class="bi bi-plus-circle"></i>
-                <span>إضافة دفعة جديدة</span>
-            </a>
-        </div>
+
+
+<div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <h2 class="text-xl font-bold text-gray-800">سجل أقساط الإيجارات</h2>
+    
+    <div class="flex items-center gap-2">
+        {{-- ✅✅✅ هذا هو الزر المطلوب ✅✅✅ --}}
+        <a href="{{ route('installments.accordion') }}" 
+           class="inline-flex items-center gap-2 bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors">
+            <i class="bi bi-collection"></i>
+            <span>عرض مجمع حسب العقد</span>
+        </a>
+        <a href="{{ route('payments.create') }}" 
+           class="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+            <i class="bi bi-plus-circle"></i>
+            <span>إضافة دفعة</span>
+        </a>
+    </div>
+
+</div>
 
         <!-- Card Body -->
         <div class="p-6">
@@ -71,8 +83,10 @@
                                     <i class="bi {{ $config['icon'] }}"></i><span>{{ $config['text'] }}</span>
                                 </span>
                             </td>
+                            
                             <td class="p-3 text-left font-mono text-gray-700">{{ number_format($installment->amount_due + $installment->late_fee, 2) }}</td>
                             <td class="p-3 text-left font-mono text-green-700">{{ number_format($installment->amount_paid, 2) }}</td>
+                          
                             <td class="p-3 text-left font-mono font-bold text-red-700">
                                 {{ number_format(($installment->amount_due + $installment->late_fee) - $installment->amount_paid, 2) }}
                             </td>
@@ -89,7 +103,7 @@
                                         <span>{{ $installment->status == 'Partially Paid' ? 'إكمال الدفع' : 'دفع الآن' }}</span>
                                     </a>
                                 @endif
-                            </td>
+                        
                         </tr>
                         @empty
                         <tr>

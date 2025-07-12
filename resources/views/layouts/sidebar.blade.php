@@ -1,4 +1,4 @@
- {{-- Make sure Alpine.js is included in your main layout (layouts/app.blade.php) --}}
+{{-- Make sure Alpine.js is included in your main layout (layouts/app.blade.php) --}}
 {{-- <script src="//unpkg.com/alpinejs" defer></script> --}}
 
 <!-- Sidebar -->
@@ -16,13 +16,7 @@
         <!-- Dashboard Link -->
         <a href="{{ route('dashboard') }}"
             class="flex items-center gap-3 p-2 rounded-md transition-colors {{ request()->routeIs('dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-            </svg>
+            <i class="bi bi-pie-chart-fill text-lg w-6 text-center"></i>
             <span>لوحة التحكم</span>
         </a>
 
@@ -31,11 +25,7 @@
             <button @click="open = !open"
                 class="w-full flex items-center justify-between p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
                 <span class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+                    <i class="bi bi-building text-lg w-6 text-center"></i>
                     <span>العقارات</span>
                 </span>
                 <svg :class="{ 'rotate-90': open }" class="w-5 h-5 transition-transform" fill="none"
@@ -60,11 +50,7 @@
             <button @click="open = !open"
                 class="w-full flex items-center justify-between p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
                 <span class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
+                    <i class="bi bi-grid-3x3-gap-fill text-lg w-6 text-center"></i>
                     <span>الشقق | الوحدات</span>
                 </span>
                 <svg :class="{ 'rotate-90': open }" class="w-5 h-5 transition-transform" fill="none"
@@ -89,11 +75,7 @@
             <button @click="open = !open"
                 class="w-full flex items-center justify-between p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
                 <span class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <i class="bi bi-people-fill text-lg w-6 text-center"></i>
                     <span>المستأجرين</span>
                 </span>
                 <svg :class="{ 'rotate-90': open }" class="w-5 h-5 transition-transform" fill="none"
@@ -120,11 +102,7 @@
             <button @click="open = !open"
                 class="w-full flex items-center justify-between p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
                 <span class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <i class="bi bi-file-earmark-text-fill text-lg w-6 text-center"></i>
                     <span>العقود</span>
                 </span>
                 <svg :class="{ 'rotate-90': open }" class="w-5 h-5 transition-transform" fill="none"
@@ -144,16 +122,12 @@
             </div>
         </div>
 
-        <!-- Payments Section -->
+        <!-- Payments Section (Updated) -->
         <div x-data="{ open: {{ request()->routeIs(['installments.*', 'payments.*']) ? 'true' : 'false' }} }">
             <button @click="open = !open"
                 class="w-full flex items-center justify-between p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700 hover:text-white">
                 <span class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <i class="bi bi-cash-stack text-lg w-6 text-center"></i>
                     <span>المدفوعات والأقساط</span>
                 </span>
                 <svg :class="{ 'rotate-90': open }" class="w-5 h-5 transition-transform" fill="none"
@@ -163,9 +137,15 @@
             </button>
             <div x-show="open" x-transition class="pr-6 mt-2 space-y-1">
                 <a href="{{ route('installments.index') }}"
-                    class="block p-2 text-sm rounded-md transition-colors {{ request()->routeIs('installments.*') ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white' }}">
+                    class="block p-2 text-sm rounded-md transition-colors {{ request()->routeIs('installments.index') ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white' }}">
                     سجل الأقساط
                 </a>
+                
+                <a href="{{ route('payments.index') }}"
+                    class="block p-2 text-sm rounded-md transition-colors {{ request()->routeIs('payments.index') ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white' }}">
+                    سجل المدفوعات
+                </a>
+
                 <a href="{{ route('payments.create') }}"
                     class="block p-2 text-sm rounded-md transition-colors {{ request()->routeIs('payments.create') ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white' }}">
                     إضافة دفعة جديدة

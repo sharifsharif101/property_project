@@ -53,4 +53,30 @@ class PaymentService
             return $installment;
         });
     }
+
+    public function reversePayment(Payment $payment): void
+    {
+        DB::transaction(function () use ($payment) {
+            $installment = $payment->rentInstallment;
+            $reversedAmount = $payment->amount;
+
+            // 1. حذف سجل الدفعة
+            $payment->delete();
+
+            // 2. تحديث القسط المرتبط (إذا كان لا يزال موجوداً)
+            if ($installment) {
+                $installment->amount_paid -= $reversedAmount;
+
+                // إعادة تقييم حالة القسط
+                if ($installment->amount_paid <= 0.00) {
+                    $installment->amount_paid = 0.00; // منع القيم السالبة
+                    $installment->status = $installment->due_date < now()->startOfDay() ? 'Overdue' : 'Due';
+                } else {
+                    $installment->status = 'Partially Paid';
+                }
+                
+                $installment->save();
+            }
+        });
+    }
 }

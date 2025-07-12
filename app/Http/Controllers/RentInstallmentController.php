@@ -2,60 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RentInstallment;
 use Illuminate\Http\Request;
-use App\Models\RentInstallment; // <-- استيراد النموذج
- 
 
- 
- 
 class RentInstallmentController extends Controller
 {
- 
+    // دالة index الحالية لديك
     public function index(Request $request)
-{
-    $query = RentInstallment::query();
-
-    if ($request->has('search_ref') && $request->filled('search_ref')) {
-        
-        $searchTerm = $request->input('search_ref');
-
-        // ▼▼▼ هذا هو الجزء الذي تم تحسينه ▼▼▼
-        $query->where(function ($q) use ($searchTerm) {
-            // نبحث في الرقم المرجعي للعقد
-            $q->whereHas('contract', function ($subQuery) use ($searchTerm) {
-                $subQuery->where('reference_number', 'like', '%' . $searchTerm . '%');
-            })
-            // أو نبحث في اسم المستأجر
-            ->orWhereHas('contract.tenant', function ($subQuery) use ($searchTerm) {
-                $subQuery->where('first_name', 'like', '%' . $searchTerm . '%')
-                         ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
-                         ->orWhere('phone', 'like', '%' . $searchTerm . '%'); // يمكن إضافة رقم الهاتف أيضاً
-            });
-        });
-        // ▲▲▲ نهاية الجزء المحسّن ▲▲▲
-    }
-
-    $installments = $query->with([
-            'contract.tenant', 
-            'contract.property',
-            'contract.unit'
-        ])
-        ->latest('due_date')
-        ->get();
-
-
-    return view('installments.index', compact('installments'));
-}
-
- public function accordionView()
     {
-        // نستخدم نفس الاستعلام بالضبط
+        // ... الكود الحالي لدالة index ...
+        // يجب أن يجلب الأقساط ويمررها إلى installments.index
         $installments = RentInstallment::with(['contract.tenant', 'contract.property', 'contract.unit'])
-            ->latest('due_date')
-            ->paginate(15);
-
-        // لكننا نرسل البيانات إلى ملف view جديد
-        return view('installments.accordion', compact('installments'));
+                        ->latest('due_date')
+                        ->get(); // أو paginate
+        
+        return view('installments.index', compact('installments'));
     }
 
+    /**
+     * ✅✅✅ الدالة الجديدة لعرض الأقساط المجمعة ✅✅✅
+     */
+    public function accordionView()
+    {
+        // جلب الأقساط مع تحميل العلاقات الضرورية مسبقاً
+        $installments = RentInstallment::with(['contract.tenant'])
+            ->orderBy('due_date', 'asc') // ترتيب الأقساط حسب تاريخ الاستحقاق داخل كل عقد
+            ->get();
+
+        // تجميع الأقساط حسب رقم العقد
+        $groupedInstallments = $installments->groupBy('contract_id');
+
+        // تمرير البيانات المجمعة إلى الواجهة الجديدة
+        return view('installments.accordion', compact('groupedInstallments'));
+    }
 }
