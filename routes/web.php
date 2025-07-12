@@ -1,123 +1,78 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PropertyController;  
+
+// --- استدعاء الـ Controllers ---
+use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\ContractController;
-use App\Http\Controllers\ContractFileController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RentInstallmentController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\RentInstallmentController; // تأكد من استيراد الكنترولر
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/home', function () {
-    return view('home');  
-})->name('home');
-
-Route::get('/test', function () {
-    return view('tenants.test');  
+// --- 1. المسار الرئيسي (صفحة الهبوط) ---
+Route::get('/', function () {
+    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login.create');
 });
 
+// --- 2. المسارات المحمية داخل التطبيق ---
+Route::middleware(['auth'])->group(function () {
 
+    // مسار لوحة التحكم
+    Route::get('/dashboard', [RentInstallmentController::class, 'index'])->name('dashboard');
+
+    // --- إدارة العقود (تم تعديل صلاحياتها) ---
+    // أي شخص يملك صلاحية عرض العقود يمكنه رؤية القائمة
+    Route::get('/contracts', [ContractController::class, 'index'])->middleware('permission:view contracts')->name('contracts.index');
+    // صلاحيات محددة لكل فعل
+    Route::get('/contracts/create', [ContractController::class, 'create'])->middleware('permission:create contracts')->name('contracts.create');
+    Route::post('/contracts', [ContractController::class, 'store'])->middleware('permission:create contracts')->name('contracts.store');
+    Route::get('/contracts/{contract}', [ContractController::class, 'show'])->middleware('permission:view contracts')->name('contracts.show');
+    Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->middleware('permission:edit contracts')->name('contracts.edit');
+    Route::put('/contracts/{contract}', [ContractController::class, 'update'])->middleware('permission:edit contracts')->name('contracts.update');
+    Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->middleware('permission:delete contracts')->name('contracts.destroy');
+    Route::get('/contracts/{contract}/file/download', [ContractController::class, 'downloadFile'])->middleware('permission:view contracts')->name('contract_files.download');
+
+
+    // --- إدارة المدفوعات والأقساط (تم تعديل صلاحياتها) ---
+    // لاحظ أننا لم نعد بحاجة لمجموعة middleware للأدوار هنا
+    Route::get('/installments', [RentInstallmentController::class, 'index'])->middleware('permission:view payments')->name('installments.index');
+    Route::get('/installments/accordion', [RentInstallmentController::class, 'accordionView'])->middleware('permission:view payments')->name('installments.accordion');
+    Route::get('/payments', [PaymentController::class, 'index'])->middleware('permission:view payments')->name('payments.index');
+    Route::get('/payments/create', [PaymentController::class, 'create'])->middleware('permission:create payments')->name('payments.create');
+    Route::post('/payments', [PaymentController::class, 'store'])->middleware('permission:create payments')->name('payments.store');
+    Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->middleware('permission:delete payments')->name('payments.destroy');
+    // يمكنك إضافة accordion للمدفوعات بنفس الطريقة إذا احتجت
+    // Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->middleware('permission:view payments')->name('payments.accordion');
+
+
+    // --- مسارات الإدارة (لا تزال محمية بالأدوار لأنها صلاحيات واسعة) ---
+    Route::middleware(['role:Super Admin|Property Manager'])->group(function () {
+        Route::resource('properties', PropertyController::class);
+        Route::get('/properties/{property}/units', [PropertyController::class, 'getUnits'])->name('properties.getUnits');
+        Route::resource('units', UnitController::class)->except(['destroy']);
+        Route::patch('/units/{unit}/update-field', [UnitController::class, 'updateField'])->name('units.updateField');
+        Route::post('/units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulkDelete');
+        Route::resource('tenants', TenantController::class);
+            Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->name('payments.accordion');
+
+    });
+
+});
  
+// --- 3. مسارات المصادقة ---
+Route::middleware('guest')->group(function () {
+    Route::get('register', [AuthenticatedSessionController::class, 'createRegistrationForm'])->name('register.create');
+    Route::post('register', [AuthenticatedSessionController::class, 'register'])->name('register.store');
+    Route::get('login', [AuthenticatedSessionController::class, 'createLoginForm'])->name('login.create');
+    Route::post('login', [AuthenticatedSessionController::class, 'login'])->name('login.store');
+});
 
-// عرض كل العقارات (الصفحة الرئيسية)
-Route::get('/', [PropertyController::class, 'index'])->name('properties.index');
-
-// عرض نموذج إنشاء عقار جديد
-Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
-
-// تخزين عقار جديد
-Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
-
-// عرض تفاصيل عقار معيّن
-Route::get('/properties/{property_id}', [PropertyController::class, 'show'])->name('properties.show');
-
-// عرض نموذج تعديل عقار موجود
-Route::get('/properties/{property}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
-
-// تحديث بيانات عقار موجود
-Route::put('/properties/{property}', [PropertyController::class, 'update'])->name('properties.update');
-
-// حذف عقار
-Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
-
-/////////////////////////////////////// units ..................
-
-Route::get('/units/create', [UnitController::class, 'create'])->name('units.create');
-Route::post('/units', [UnitController::class, 'store'])->name('units.store');
-Route::get('/units', [UnitController::class, 'index'])->name('units.index');
-Route::patch('/units/{unit}/update-field', [UnitController::class, 'updateField'])->name('units.updateField');
-Route::post('/units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulkDelete');
-Route::get('units/{unit}', [UnitController::class, 'show'])->name('units.show');
-Route::get('units/{unit}/edit', [UnitController::class, 'edit'])->name('units.edit');
-Route::put('units/{unit}', [UnitController::class, 'update'])->name('units.update');
-
-
-
-
-/////////////////////////////////////// Tenant ..................
-
- Route::get('/tenants/create', [TenantController::class, 'create'])->name('tenants.create');
-Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
-
-Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
-
-Route::get('/tenants/create', [TenantController::class, 'create'])->name('tenants.create');
-Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
-Route::get('/tenants/{tenant}', [TenantController::class, 'show'])->name('tenants.show');   // عرض مستأجر معين
-Route::get('/tenants/{tenant}/edit', [TenantController::class, 'edit'])->name('tenants.edit'); // نموذج تعديل
-Route::put('/tenants/{tenant}', [TenantController::class, 'update'])->name('tenants.update');  // تحديث بيانات
-Route::delete('/tenants/{tenant}', [TenantController::class, 'destroy'])->name('tenants.destroy'); // حذف
-
-/////////////////////////////////////// contracts ..................
-
- 
-
-// Index - List all contracts
-Route::get('/contracts', [ContractController::class, 'index'])->name('contracts.index');
-
-// Create - Show form to create a new contract
-Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
-
-// Store - Save the new contract
-Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
-
-// Show - Display a specific contract
-Route::get('/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
-
-// Edit - Show form to edit a contract
-Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
-
-// Update - Save the edited contract
-Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
-
-// Destroy - Delete a contract
-Route::delete('/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
-
-Route::get('/contracts/{contract}/file/download', [ContractController::class, 'downloadFile'])  ->name('contract_files.download');
-//اختيار عقار معين يؤدي الى جلب كل الواحدات المرتبطه به 
-Route::get('/properties/{property}/units', [App\Http\Controllers\PropertyController::class, 'getUnits']);
-
-
-/////////////////////////////////////// payments ..................
-
-Route::get('/payments/create', [PaymentController::class, 'create'])->name('payments.create');
-Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
-
-Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
-
-Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-
-
-
-Route::get('/installments', [RentInstallmentController::class, 'index'])->name('installments.index');
-
- 
-
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->name('payments.accordion');
-
-Route::get('/installments/accordion', [RentInstallmentController::class, 'accordionView'])->name('installments.accordion');
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
