@@ -43,7 +43,6 @@ class TenantController extends Controller
             'monthly_income' => 'nullable|numeric',
             'notes' => 'nullable|string',
             'tenant_type' => 'required|in:individual,company',
-            'status' => 'required|in:active,suspended,terminated',
             'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
@@ -98,7 +97,6 @@ class TenantController extends Controller
             'monthly_income' => 'nullable|numeric',
             'notes' => 'nullable|string',
             'tenant_type' => 'required|in:individual,company',
-            'status' => 'required|in:active,suspended,terminated',
             'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 

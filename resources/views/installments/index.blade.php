@@ -34,7 +34,6 @@
         <div class="p-6">
             <div class="overflow-x-auto">
                 
-                {{-- ✅✅✅ بداية التعديل: استخدام @if بدلاً من @forelse للجدول --}}
                 @if(isset($installments) && $installments->count() > 0)
 
                     <table id="installments-table" class="w-full text-xs text-right">
@@ -53,9 +52,48 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            {{-- استخدام @foreach العادية الآن --}}
                             @foreach($installments as $installment)
-                            <tr class="hover:bg-gray-50">
+                            
+                            @php
+                                $rowClass = '';
+                                $statusText = '';
+                                $statusIcon = '';
+                                $statusClass = '';
+
+                                // التحقق إذا كان القسط متأخراً
+                                if ($installment->status == 'Overdue') {
+                                    
+                                    // ✅ --- بداية التعديل: حساب عدد الأيام كرقم صحيح ---
+                                    // نستخدم startOfDay() لضمان مقارنة الأيام الكاملة فقط وتجنب الكسور العشرية.
+                                    $overdueDays = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($installment->due_date)->startOfDay());
+                                    // ✅ --- نهاية التعديل ---
+
+                                    // تحديد كلاس التمييز الأحمر للسطر
+                                    $rowClass = 'bg-red-50/50 hover:bg-red-50 border-l-4 border-red-400';
+                                    
+                                    // تحديد معلومات الحالة للمتأخر
+                                    $statusText = "متأخر منذ " . $overdueDays . " يوم";
+                                    $statusIcon = 'bi-exclamation-triangle-fill';
+                                    $statusClass = 'bg-red-100 text-red-800';
+
+                                } else {
+                                    // استخدام الإعدادات الافتراضية للحالات الأخرى
+                                    $statusConfig = [
+                                        'Paid'           => ['class' => 'bg-green-100 text-green-800', 'text' => 'مدفوع بالكامل', 'icon' => 'bi-check-circle-fill'],
+                                        'Partially Paid' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'مدفوع جزئياً', 'icon' => 'bi-pie-chart-fill'],
+                                        'Due'            => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'مستحق', 'icon' => 'bi-hourglass-split'],
+                                        'Cancelled'      => ['class' => 'bg-gray-200 text-gray-600', 'text' => 'ملغي', 'icon' => 'bi-x-circle-fill'],
+                                    ];
+                                    $config = $statusConfig[$installment->status] ?? ['class' => 'bg-gray-100', 'text' => $installment->status, 'icon' => 'bi-question-circle'];
+                                    
+                                    $statusText = $config['text'];
+                                    $statusIcon = $config['icon'];
+                                    $statusClass = $config['class'];
+                                }
+                            @endphp
+
+                            {{-- تطبيق الكلاس الشرطي على الصف <tr> --}}
+                            <tr class="{{ $rowClass }}">
                                 <td class="p-3 text-gray-700">{{ $installment->id + 10000 }}</td>
                                 <td class="p-3 whitespace-nowrap">
                                     <div class="font-semibold text-sm text-gray-900">{{ $installment->contract->tenant->first_name ?? '' }} {{ $installment->contract->tenant->last_name ?? 'N/A' }}</div>
@@ -69,19 +107,11 @@
                                     <span class="bg-gray-100 text-gray-700 font-mono px-2 py-1 rounded-md">{{ $installment->contract->reference_number ?? 'N/A' }}</span>
                                 </td>
                                 <td class="p-3 text-gray-800" dir="ltr">{{ \Carbon\Carbon::parse($installment->due_date)->format('Y-m-d') }}</td>
+                                
+                                {{-- عرض الحالة المخصصة (مع عدد أيام التأخير إذا كان متأخراً) --}}
                                 <td class="p-3 text-center">
-                                    @php
-                                        $statusConfig = [
-                                            'Paid'           => ['class' => 'bg-green-100 text-green-800', 'text' => 'مدفوع بالكامل', 'icon' => 'bi-check-circle-fill'],
-                                            'Partially Paid' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'مدفوع جزئياً', 'icon' => 'bi-pie-chart-fill'],
-                                            'Overdue'        => ['class' => 'bg-red-100 text-red-800', 'text' => 'متأخر', 'icon' => 'bi-exclamation-triangle-fill'],
-                                            'Due'            => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'مستحق', 'icon' => 'bi-hourglass-split'],
-                                            'Cancelled'      => ['class' => 'bg-gray-200 text-gray-600', 'text' => 'ملغي', 'icon' => 'bi-x-circle-fill'],
-                                        ];
-                                        $config = $statusConfig[$installment->status] ?? ['class' => 'bg-gray-100', 'text' => $installment->status, 'icon' => 'bi-question-circle'];
-                                    @endphp
-                                    <span class="inline-flex items-center gap-x-1.5 rounded-full px-2.5 py-1 font-semibold {{ $config['class'] }}">
-                                        <i class="bi {{ $config['icon'] }}"></i><span>{{ $config['text'] }}</span>
+                                    <span class="inline-flex items-center gap-x-1.5 rounded-full px-2.5 py-1 font-semibold {{ $statusClass }}">
+                                        <i class="bi {{ $statusIcon }}"></i><span>{{ $statusText }}</span>
                                     </span>
                                 </td>
                                 
@@ -111,7 +141,6 @@
                     </table>
 
                 @else 
-                    {{-- عرض هذه الرسالة فقط إذا كانت المجموعة فارغة --}}
                     <div class="text-center py-16 text-gray-500">
                         <div class="flex flex-col items-center">
                             <i class="bi bi-journal-x text-5xl text-gray-300"></i>
@@ -119,15 +148,12 @@
                         </div>
                     </div>
                 @endif
-                {{-- نهاية التعديل --}}
-
             </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    {{-- ✅✅✅ تم تعديل كود JavaScript هنا أيضاً ✅✅✅ --}}
     <script>
         $(document).ready(function() {
             // التحقق من وجود الجدول قبل تهيئته

@@ -4,17 +4,6 @@
 
 @section('content')
 
-    {{-- ✅✅✅ تم تعريف المتغير هنا لحل المشكلة ✅✅✅ --}}
-    @php
-        $statusConfig = [ 
-            'Paid'           => ['class' => 'bg-green-100 text-green-800', 'text' => 'مدفوع'], 
-            'Partially Paid' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'جزئي'], 
-            'Overdue'        => ['class' => 'bg-red-100 text-red-800', 'text' => 'متأخر'], 
-            'Due'            => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'مستحق'], 
-            'Cancelled'      => ['class' => 'bg-gray-200 text-gray-600', 'text' => 'ملغي'], 
-        ];
-    @endphp
-
     <div class="bg-white rounded-lg shadow-md">
         <!-- رأس الكارد -->
         <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -96,7 +85,7 @@
                                     </div>
                                 </div>
 
-                                {{-- جدول الأقساط --}}
+                                {{-- ✅✅✅ بداية التعديل: جدول الأقساط بالمنطق المتقدم ✅✅✅ --}}
                                 <div class="p-4 overflow-x-auto">
                                     <table class="w-full text-sm text-right">
                                         <thead class="text-gray-600">
@@ -111,11 +100,48 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($installmentsInGroup as $installment)
-                                            <tr class="border-b border-gray-100 last:border-b-0">
+
+                                            @php
+                                                $rowClass = '';
+                                                $statusText = '';
+                                                $statusIcon = '';
+                                                $statusClass = '';
+
+                                                if ($installment->status == 'Overdue') {
+                                                    // حساب أيام التأخير كرقم صحيح وموجب
+                                                    $overdueDays = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($installment->due_date)->startOfDay());
+                                                    
+                                                    // تطبيق كلاس خفيف على السطر بالكامل
+                                                    $rowClass = 'bg-red-50/50';
+                                                    
+                                                    // إعداد نص وأيقونة الحالة للمتأخر
+                                                    $statusText = "متأخر منذ " . $overdueDays . " يوم";
+                                                    $statusIcon = 'bi-exclamation-triangle-fill';
+                                                    $statusClass = 'bg-red-100 text-red-800';
+
+                                                } else {
+                                                    // الإعدادات الافتراضية لباقي الحالات
+                                                    $statusConfig = [
+                                                        'Paid'           => ['class' => 'bg-green-100 text-green-800', 'text' => 'مدفوع بالكامل', 'icon' => 'bi-check-circle-fill'],
+                                                        'Partially Paid' => ['class' => 'bg-yellow-100 text-yellow-800', 'text' => 'مدفوع جزئياً', 'icon' => 'bi-pie-chart-fill'],
+                                                        'Due'            => ['class' => 'bg-blue-100 text-blue-800', 'text' => 'مستحق', 'icon' => 'bi-hourglass-split'],
+                                                        'Cancelled'      => ['class' => 'bg-gray-200 text-gray-600', 'text' => 'ملغي', 'icon' => 'bi-x-circle-fill'],
+                                                    ];
+                                                    $config = $statusConfig[$installment->status] ?? ['class' => 'bg-gray-100', 'text' => $installment->status, 'icon' => 'bi-question-circle'];
+                                                    
+                                                    $statusText = $config['text'];
+                                                    $statusIcon = $config['icon'];
+                                                    $statusClass = $config['class'];
+                                                }
+                                            @endphp
+
+                                            <tr class="border-b border-gray-100 last:border-b-0 {{ $rowClass }}">
                                                 <td class="py-3 text-gray-800" dir="ltr">{{ \Carbon\Carbon::parse($installment->due_date)->format('Y-m-d') }}</td>
                                                 <td class="py-3 text-center">
-                                                    {{-- لم يعد هذا الكود يسبب خطأ الآن --}}
-                                                    <span class="rounded-full px-2.5 py-1 font-semibold text-xs {{ $statusConfig[$installment->status]['class'] ?? '' }}">{{ $statusConfig[$installment->status]['text'] ?? 'N/A' }}</span>
+                                                    {{-- عرض الحالة المتقدم مع الأيقونة --}}
+                                                    <span class="inline-flex items-center gap-x-1.5 rounded-full px-2.5 py-1 font-semibold text-xs {{ $statusClass }}">
+                                                        <i class="bi {{ $statusIcon }}"></i><span>{{ $statusText }}</span>
+                                                    </span>
                                                 </td>
                                                 <td class="py-3 text-left font-mono text-gray-700">{{ number_format($installment->amount_due + $installment->late_fee, 2) }}</td>
                                                 <td class="py-3 text-left font-mono text-green-700">{{ number_format($installment->amount_paid, 2) }}</td>
@@ -124,7 +150,7 @@
                                                     @if(!in_array($installment->status, ['Paid', 'Cancelled']))
                                                         <a href="{{ route('payments.create', ['installment_id' => $installment->id]) }}" class="text-green-600 hover:text-green-800 text-base" title="إضافة دفعة"><i class="bi bi-cash-coin"></i></a>
                                                     @else
-                                                        <span class="text-gray-400 text-base"><i class="bi bi-check-circle"></i></span>
+                                                        <span class="text-gray-400 text-base" title="الحالة مكتملة"><i class="bi bi-check-circle"></i></span>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -132,6 +158,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {{-- نهاية التعديل --}}
                             </div>
                         </div>
                     @endforeach

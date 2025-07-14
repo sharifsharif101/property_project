@@ -11,11 +11,7 @@ use Spatie\Permission\Models\Role;
 
 class AuthenticatedSessionController extends Controller
 {
-    // --- تسجيل مستخدم جديد ---
-
-    /**
-     * عرض صفحة تسجيل مستخدم جديد.
-     */
+    
     public function createRegistrationForm()
     {
         return view('auth.register');
