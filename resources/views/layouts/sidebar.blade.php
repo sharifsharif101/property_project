@@ -14,11 +14,12 @@
     <!-- Navigation Links -->
     <nav class="flex-grow space-y-2">
         <!-- Dashboard Link -->
-        <a href="{{ route('dashboard') }}"
-            class="flex items-center gap-3 p-2 rounded-md transition-colors {{ request()->routeIs('dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
-            <i class="bi bi-pie-chart-fill text-lg w-6 text-center"></i>
-            <span>لوحة التحكم</span>
-        </a>
+     <a href="{{ route('dashboard2.index') }}"
+    class="flex items-center gap-3 p-2 rounded-md transition-colors {{ request()->routeIs('dashboard2.index') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }}">
+    <i class="bi bi-pie-chart-fill text-lg w-6 text-center"></i>
+    <span>لوحة التحكم</span>
+</a>
+
 
         <!-- Properties Section -->
         <div x-data="{ open: {{ request()->routeIs('properties.*') ? 'true' : 'false' }} }">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html dir="rtl" lang="ar" data-bs-theme="light">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,6 +21,19 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+            /* إجبار الصفحة على الظهور دائمًا في الوضع الفاتح، بغض النظر عن إعدادات النظام */
+    html {
+        color-scheme: light !important;
+    }
+
+    /* أو بشكل أكثر تحكمًا: تأكد أن جميع العناصر تستخدم ألوان الوضع الفاتح */
+    html, body, .bg-white, .bg-gray-50, .text-gray-800, .text-gray-600, .text-gray-500, .text-gray-900,
+    .bg-green-100, .bg-red-100, .bg-yellow-100, .bg-blue-100, .bg-gray-200,
+    .border-gray-200, .border-red-400, .border-yellow-400, .border-blue-400 {
+        --tw-bg-opacity: 1 !important;
+        --tw-text-opacity: 1 !important;
+        --tw-border-opacity: 1 !important;
+    }
         body { font-family: 'Cairo', sans-serif; }
         .submenu { max-height: 0; transition: max-height 0.3s ease-out; }
 
@@ -34,6 +47,8 @@
             padding: 0.5rem 0.75rem !important;
         }
     </style>
+
+    
 </head>
 
 <body class="bg-gray-100 flex min-h-screen">
@@ -44,7 +59,6 @@
     <div class="flex-grow flex flex-col">
         @include('layouts.nav')
         
-        {{-- ✅✅✅ هذا هو الجزء الذي تم تعديله ✅✅✅ --}}
         @hasSection('header')
             <header class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-4 px-6 sm:px-8">
@@ -52,8 +66,7 @@
                 </div>
             </header>
         @endif
-        {{-- نهاية الجزء المعدل --}}
-
+ 
         <main class="p-6 md:p-8">
             @yield('content')
         </main>

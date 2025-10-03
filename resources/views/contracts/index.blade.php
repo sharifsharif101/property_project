@@ -28,10 +28,8 @@
         <!-- Card Body -->
         <div class="p-6">
             <div class="overflow-x-auto">
-                {{-- ✅ FONT SIZE IS NOW SMALLER --}}
                 <table id="contractsTable" class="w-full text-xs text-right">
                     <thead class="bg-gray-50 text-gray-600">
-                        {{-- ✅ HEADER FONT IS NOW text-sm --}}
                         <tr>
                             <th class="p-3 font-medium text-sm">المستأجر</th>
                             <th class="p-3 font-medium text-sm">العقار / الوحدة</th>
@@ -66,7 +64,6 @@
                             
                             <tr class="hover:bg-gray-50 {{ $rowClass }}">
                                 <td class="p-3 whitespace-nowrap">
-                                    {{-- Font is now text-sm for better hierarchy --}}
                                     <div class="font-semibold text-sm text-gray-900">{{ $contract->tenant->first_name ?? '' }} {{ $contract->tenant->last_name ?? 'N/A' }}</div>
                                     <div class="text-gray-500">{{ $contract->tenant->phone ?? '' }}</div>
                                 </td>
@@ -127,15 +124,8 @@
 
 @push('scripts')
     {{-- Custom Tooltip Style --}}
-    <style>.tooltip { @apply absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap; }</style>
-
-    <script>
-        $(document).ready(function() {
-            $('#contractsTable').DataTable({
-                "language": { "url": "https://cdn.datatables.net/plug-ins/2.0.3/i18n/ar.json" },
-                "columnDefs": [ { "orderable": false, "targets": [5] } ],
-                "order": [[ 2, "desc" ]] 
-            });
-        });
-    </script>
+    <style>
+        html { color-scheme: light; }
+        .tooltip { @apply absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap; }
+    </style>
 @endpush

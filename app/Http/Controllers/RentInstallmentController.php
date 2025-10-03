@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 class RentInstallmentController extends Controller
 {
-  public function index(Request $request)
+    public function index(Request $request)
     {
         // ✅ --- بداية التعديل: تحديث حالة الأقساط تلقائياً ---
         // الخطوة 1: البحث عن كل الأقساط التي حالتها "مستحق" (Due) وتاريخ استحقاقها أصبح في الماضي

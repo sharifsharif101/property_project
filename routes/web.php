@@ -17,9 +17,16 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/dashboard2', function () {
+    return view('dashboard2.index');
+})->name('dashboard2.index');
+
+
 // --- 1. المسار الرئيسي (صفحة الهبوط) ---
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login.create');
+    return auth()->check()
+        ? redirect()->route('dashboard2.index')
+        : redirect()->route('login.create');
 });
 
 // --- 2. المسارات المحمية داخل التطبيق ---
@@ -50,7 +57,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/payments', [PaymentController::class, 'store'])->middleware('permission:create payments')->name('payments.store');
     Route::delete('/payments/{payment}', [PaymentController::class, 'destroy'])->middleware('permission:delete payments')->name('payments.destroy');
     // يمكنك إضافة accordion للمدفوعات بنفس الطريقة إذا احتجت
-    // Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->middleware('permission:view payments')->name('payments.accordion');
 
 
     // --- مسارات الإدارة (لا تزال محمية بالأدوار لأنها صلاحيات واسعة) ---
@@ -61,7 +67,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/units/{unit}/update-field', [UnitController::class, 'updateField'])->name('units.updateField');
         Route::post('/units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulkDelete');
         Route::resource('tenants', TenantController::class);
-            Route::get('/payments/accordion-view', [PaymentController::class, 'accordionView'])->name('payments.accordion');
+        Route::get('/payments/accordion', [PaymentController::class, 'accordionView'])->name('payments.accordion');
 
     });
 
