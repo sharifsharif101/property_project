@@ -24,49 +24,45 @@ class TenantController extends Controller
         return view('tenants.create');
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'father_name' => 'nullable|string|max:100',
-            'phone' => 'required|string',
-            'alternate_phone' => 'nullable|string',
-            'email' => 'nullable|email',
-            'whatsapp' => 'nullable|string',
-            'id_type' => 'required|in:national_card,passport,residence',
-            'id_number' => 'required|string|unique:tenants,id_number',
-            'id_expiry_date' => 'nullable|date',
-            'id_verified' => 'boolean',
-            'address' => 'nullable|string',
-            'employer' => 'nullable|string',
-            'monthly_income' => 'nullable|numeric',
-            'notes' => 'nullable|string',
-            'tenant_type' => 'required|in:individual,company',
-            'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+ public function store(Request $request)
+{
+    $validated = $request->validate([
+        'first_name' => 'required|string|max:100',
+        'last_name' => 'required|string|max:100',
+        'father_name' => 'nullable|string|max:100',
+        'phone' => 'required|string',
+        'alternate_phone' => 'nullable|string',
+        'email' => 'nullable|email',
+        'whatsapp' => 'nullable|string',
+        'id_type' => 'required|in:national_card,passport,residence',
+        'id_number' => 'required|string|unique:tenants,id_number',
+        'id_expiry_date' => 'nullable|date',
+        'id_verified' => 'boolean',
+        'address' => 'nullable|string',
+        'employer' => 'nullable|string',
+        'monthly_income' => 'nullable|numeric',
+        'notes' => 'nullable|string',
+        'tenant_type' => 'required|in:individual,company',
+        'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
 
-        // رفع الصورة
-        if ($request->hasFile('tenant_image')) {
-            $image = $request->file('tenant_image');
-            
-            // إنشاء اسم فريد للصورة
-            $imageName = 'tenant_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            
-            // مسار حفظ الصورة
-            $imagePath = 'tenants/' . $imageName;
-            
-            // حفظ الصورة
-            $image->storeAs('tenants', $imageName, 'public');
-            
-            // إضافة مسار الصورة للبيانات المعتمدة
-            $validated['image_path'] = $imagePath;
-        }
+    if ($request->hasFile('tenant_image')) {
+        $image = $request->file('tenant_image');
+        $imageName = 'tenant_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
 
-        $tenant = Tenant::create($validated);
+        // تخزين الصورة في public/uploads/tenants
+        $imagePath = $image->storeAs('tenants', $imageName, 'public_uploads');
 
-        return redirect()->route('tenants.index')->with('success', 'تم حفظ المستأجر بنجاح');
+        // حفظ المسار النسبي
+        $validated['image_path'] = $imagePath; // مثال: tenants/tenant_1696353456_xxx.jpg
     }
+
+    Tenant::create($validated);
+
+    return redirect()->route('tenants.index')->with('success', 'تم حفظ المستأجر بنجاح');
+}
+
+ 
 
     public function show(Tenant $tenant)
     {

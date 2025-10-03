@@ -38,15 +38,13 @@ return [
             'report' => false,
         ],
 
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),  // مسار تخزين الملفات فعلياً
-            'url' => env('APP_URL') . '/storage',  // الرابط العام للوصول للملفات
-            'visibility' => 'public',               // لجعل الملفات متاحة للعرض عبر الإنترنت
-            'throw' => false,                       // في Laravel 10+ للتحكم في رمي الاستثناءات
-            'report' => false,                      // تحكم في الإبلاغ عن الأخطاء (نادر الاستخدام)
-        ],
-
+  
+ 'public_uploads' => [
+        'driver' => 'local',
+        'root' => public_path('uploads'),
+        'url' => env('APP_URL') . '/uploads',
+        'visibility' => 'public',
+    ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
