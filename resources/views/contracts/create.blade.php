@@ -32,7 +32,7 @@
             <select name="tenant_id" class="w-full border p-2 rounded">
                 <option value="">اختر مستأجر</option>
                 @foreach($tenants as $tenant)
-                    <option value="{{ $tenant->id }}">{{ $tenant->first_name }} {{ $tenant->last_name }}</option>
+                    <option value="{{ $tenant->id }}" {{ old('tenant_id') == $tenant->id ? 'selected' : '' }}>{{ $tenant->first_name }} {{ $tenant->last_name }}</option>
                 @endforeach
             </select>
         </div>
@@ -43,7 +43,7 @@
             <select name="property_id" id="property-select" class="w-full border p-2 rounded">
                 <option value="">اختر العقار</option>
                 @foreach($properties as $property)
-                    <option value="{{ $property->property_id }}">{{ $property->name ?? 'عقار #' . $property->property_id }}</option>
+                    <option value="{{ $property->property_id }}" {{ old('property_id') == $property->property_id ? 'selected' : '' }}>{{ $property->name ?? 'عقار #' . $property->property_id }}</option>
                 @endforeach
             </select>
         </div>
@@ -51,7 +51,7 @@
         {{-- الوحدة --}}
         <div>
             <label>الوحدة</label>
-            <select name="unit_id" id="unit-select" class="w-full border p-2 rounded">
+            <select name="unit_id" id="unit-select" class="w-full border p-2 rounded" data-old-unit="{{ old('unit_id') }}">
                 <option value="">اختر وحدة</option>
             </select>
         </div>
@@ -60,11 +60,11 @@
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label>تاريخ البداية</label>
-                <input type="date" name="start_date" class="w-full border p-2 rounded">
+                <input type="date" name="start_date" value="{{ old('start_date') }}" class="w-full border p-2 rounded">
             </div>
             <div>
                 <label>تاريخ النهاية</label>
-                <input type="date" name="end_date" class="w-full border p-2 rounded">
+                <input type="date" name="end_date" value="{{ old('end_date') }}" class="w-full border p-2 rounded">
             </div>
         </div>
 
@@ -72,11 +72,11 @@
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label>قيمة الإيجار</label>
-                <input type="number" name="rent_amount" step="0.01" class="w-full border p-2 rounded">
+                <input type="number" name="rent_amount" value="{{ old('rent_amount') }}" step="0.01" class="w-full border p-2 rounded">
             </div>
             <div>
                 <label>نوع الإيجار</label>
-                <select name="rent_type" class="w-full border p-2 rounded">
+                <select name="rent_type" class="w-full border p-2 rounded" value="{{ old('rent_type') }}">
                     <option value="daily">يومي</option>
                     <option value="weekly">أسبوعي</option>
                     <option value="monthly" selected>شهري</option>
@@ -88,7 +88,7 @@
         {{-- الضمان --}}
         <div>
             <label>الضمان</label>
-            <input type="number" name="security_deposit" step="0.01" class="w-full border p-2 rounded">
+            <input type="number" name="security_deposit" value="{{ old('security_deposit') }}" step="0.01" class="w-full border p-2 rounded">
         </div>
 
         {{-- رقم المرجع --}}
@@ -102,7 +102,7 @@
         {{-- الحالة --}}
         <div>
             <label>الحالة</label>
-            <select name="status" class="w-full border p-2 rounded">
+            <select name="status" class="w-full border p-2 rounded" value="{{ old('status', 'draft') }}">
                 <option value="draft">مسودة</option>
                 <option value="active">نشط</option>
                 <option value="terminated">منتهي</option>
@@ -124,7 +124,7 @@
         {{-- سبب الإنهاء --}}
         <div>
             <label>سبب الإنهاء</label>
-            <select name="termination_reason" class="w-full border p-2 rounded">
+            <select name="termination_reason" class="w-full border p-2 rounded" value="{{ old('termination_reason') }}">
                 <option value="">-- إن وجد --</option>
                 <option value="late_payment">تأخر في الدفع</option>
                 <option value="property_damage">تلف في العقار</option>
@@ -138,7 +138,7 @@
         {{-- ملاحظات الإنهاء --}}
         <div>
             <label>ملاحظات الإنهاء</label>
-            <textarea name="termination_notes" rows="3" class="w-full border p-2 rounded"></textarea>
+            <textarea name="termination_notes" rows="3" class="w-full border p-2 rounded">{{ old('termination_notes') }}</textarea>
         </div>
 
         <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">حفظ العقد</button>
@@ -150,11 +150,11 @@
 document.addEventListener('DOMContentLoaded', function () {
     const propertySelect = document.getElementById('property-select');
     const unitSelect = document.getElementById('unit-select');
+    const oldUnitId = unitSelect.dataset.oldUnit;
 
     if (!propertySelect || !unitSelect) return;
 
-    propertySelect.addEventListener('change', function () {
-        const propertyId = this.value;
+    function fetchUnits(propertyId) {
         unitSelect.innerHTML = '<option value="">جاري التحميل...</option>';
 
         if (!propertyId) {
@@ -191,6 +191,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         option.textContent += ' (غير متاحة)';
                     }
 
+                    if (oldUnitId && unit.id == oldUnitId) {
+                        option.selected = true;
+                    }
+
                     unitSelect.appendChild(option);
                 });
             })
@@ -198,7 +202,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('خطأ أثناء تحميل الوحدات:', error);
                 unitSelect.innerHTML = '<option value="">حدث خطأ في التحميل</option>';
             });
+    }
+
+    propertySelect.addEventListener('change', function () {
+        fetchUnits(this.value);
     });
+
+    // عند تحميل الصفحة، تحقق إذا كان هناك عقار محدد مسبقًا (من خطأ التحقق)
+    if (propertySelect.value) {
+        fetchUnits(propertySelect.value);
+    }
 });
 </script>
 

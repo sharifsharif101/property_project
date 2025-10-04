@@ -13,7 +13,7 @@
     </div>
 
     @if(session('success'))
-        <div class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
+        <div id="success-alert" class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm transition-opacity duration-500 ease-out" role="alert">
             <strong class="font-bold">نجاح!</strong>
             <span class="block sm:inline">{{ session('success') }}</span>
         </div>
@@ -21,18 +21,18 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
-            <div class="d-flex justify-between items-center mb-3">
-                <div class="search-box">
-                    <input type="text" id="searchInput" class="form-control w-full md:w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="البحث في الجدول...">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-3 gap-3">
+                <div class="search-box flex-grow md:flex-grow-0 w-full md:w-64">
+                    <input type="text" id="searchInput" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="البحث في الجدول...">
                 </div>
-                <div class="flex items-center space-x-2 space-x-reverse">
+                <div class="flex items-center gap-2">
                     <select id="entriesSelect" class="form-select w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
-                    <label class="text-gray-700">إدخالات لكل صفحة</label>
+                    <label for="entriesSelect" class="text-gray-700 whitespace-nowrap">إدخالات لكل صفحة</label>
                 </div>
             </div>
 
@@ -179,105 +179,151 @@
   <script>
     let currentPage = 1;
     let entriesPerPage = 10;
-    
+
     function getAllRows() {
-        return Array.from(document.querySelectorAll('#tableBody tr:not([colspan])'));
+        return Array.from(document.querySelectorAll('#tableBody tr:not([data-no-search])'));
     }
-    
+
+    function initVisibility() {
+        const allRows = getAllRows();
+        allRows.forEach(row => row.dataset.visible = '1');
+    }
+
     function paginate(array, page_size, page_number) {
         return array.slice((page_number - 1) * page_size, page_number * page_size);
     }
-    
-    function pageCount(array, page_size) {
-        return Math.ceil(array.length / page_size);
+
+    function pageCountVisible(visibleCount, page_size) {
+        return Math.max(1, Math.ceil(visibleCount / page_size));
     }
-    
+
     function renderTable() {
         const allRows = getAllRows();
-        if (allRows.length === 0) {
-             const existingPagination = document.getElementById('pagination');
-             if (existingPagination) {
-                 existingPagination.innerHTML = '';
-             }
+        const visibleRows = allRows.filter(row => row.dataset.visible !== '0');
+
+        let noResultsRow = document.querySelector('tr[data-no-search="1"]');
+        if (!noResultsRow) {
+            noResultsRow = document.createElement('tr');
+            noResultsRow.setAttribute('data-no-search', '1');
+            noResultsRow.innerHTML = `
+                <td colspan="6" class="px-6 py-12 text-center">
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="bi bi-journal-x text-gray-400 text-5xl"></i>
+                        <h4 class="mt-3 text-lg text-gray-700">لا توجد نتائج تطابق البحث.</h4>
+                    </div>
+                </td>
+            `;
+            noResultsRow.style.display = 'none';
+            document.querySelector('#tableBody').appendChild(noResultsRow);
+        }
+
+        allRows.forEach(row => row.style.display = 'none');
+
+        if (visibleRows.length === 0) {
+            const emptyRow = document.querySelector('tr[data-empty-table]');
+            if (!emptyRow) { // فقط أظهر "لا نتائج" إذا لم تكن الجدول فارغًا أصلاً
+                noResultsRow.style.display = '';
+            }
+            document.getElementById('pagination').innerHTML = '';
+            return;
+        } else {
+            noResultsRow.style.display = 'none';
+        }
+
+        const totalPages = pageCountVisible(visibleRows.length, entriesPerPage);
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const rowsToShow = paginate(visibleRows, entriesPerPage, currentPage);
+        rowsToShow.forEach(row => row.style.display = '');
+    }
+
+    function renderPagination() {
+        const allRows = getAllRows();
+        const visibleRows = allRows.filter(row => row.dataset.visible !== '0');
+        const pagination = document.getElementById('pagination');
+
+        if (visibleRows.length === 0) {
+            pagination.innerHTML = '';
             return;
         }
 
-        const currentRows = paginate(allRows, entriesPerPage, currentPage);
-        
-        allRows.forEach(row => row.style.display = 'none');
-        currentRows.forEach(row => row.style.display = '');
-    }
-    
-    function renderPagination() {
-        const allRows = getAllRows();
-        if (allRows.length === 0) return;
-
-        const pagination = document.getElementById('pagination');
-        const totalPages = pageCount(allRows, entriesPerPage);
-        
+        const totalPages = pageCountVisible(visibleRows.length, entriesPerPage);
         pagination.innerHTML = '';
-        
+
         const prevLi = document.createElement('li');
-        prevLi.className = 'page-item';
-        if (currentPage === 1) prevLi.classList.add('disabled');
+        prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
         prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">السابق</a>`;
         pagination.appendChild(prevLi);
-        
+
         for (let i = 1; i <= totalPages; i++) {
             const li = document.createElement('li');
             li.className = `page-item ${i === currentPage ? 'active' : ''}`;
             li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>`;
             pagination.appendChild(li);
         }
-        
+
         const nextLi = document.createElement('li');
-        nextLi.className = 'page-item';
-        if (currentPage === totalPages) nextLi.classList.add('disabled');
+        nextLi.className = 'page-item' + (currentPage === totalPages ? ' disabled' : '');
         nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">التالي</a>`;
         pagination.appendChild(nextLi);
     }
-    
-    function changePage(page) {
-        if (page < 1) page = 1;
-        const allRows = getAllRows();
-        if (allRows.length === 0) return;
 
-        const totalPages = pageCount(allRows, entriesPerPage);
+    function changePage(page) {
+        const allRows = getAllRows();
+        const visibleRows = allRows.filter(row => row.dataset.visible !== '0');
+
+        if (visibleRows.length === 0) {
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+            return;
+        }
+
+        const totalPages = pageCountVisible(visibleRows.length, entriesPerPage);
+        if (page < 1) page = 1;
         if (page > totalPages) page = totalPages;
-        
+
         currentPage = page;
         renderTable();
         renderPagination();
     }
-    
+
     function searchTable() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         const allRows = getAllRows();
-        
-        allRows.forEach(row => {
-            const searchData = row.getAttribute('data-search').toLowerCase();
-            if (searchData.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
+
+        if (searchTerm === '') {
+            allRows.forEach(row => row.dataset.visible = '1');
+        } else {
+            allRows.forEach(row => {
+                const searchData = (row.getAttribute('data-search') || '').toLowerCase();
+                row.dataset.visible = searchData.includes(searchTerm) ? '1' : '0';
+            });
+        }
+
         currentPage = 1;
-        renderPagination();
         renderTable();
+        renderPagination();
     }
-    
+
     function showImageModal(imageSrc) {
         document.getElementById('modalImage').src = imageSrc;
         document.getElementById('imageModal').classList.remove('hidden');
     }
-    
+
     function closeImageModal() {
         document.getElementById('imageModal').classList.add('hidden');
     }
-    
+
     document.addEventListener('DOMContentLoaded', function() {
+        // إضافة علامة للصف الفارغ الأصلي
+        const emptyRow = document.querySelector('#tableBody td[colspan="6"]');
+        if (emptyRow) {
+            emptyRow.parentElement.setAttribute('data-empty-table', '1');
+        }
+
+        initVisibility();
         renderTable();
         renderPagination();
         
@@ -285,8 +331,7 @@
         document.getElementById('entriesSelect').addEventListener('change', function() {
             entriesPerPage = parseInt(this.value);
             currentPage = 1;
-            renderTable();
-            renderPagination();
+            searchTable(); // إعادة البحث ليعيد الحسابات من جديد
         });
         
         // Close modal when clicking outside
@@ -295,8 +340,22 @@
                 closeImageModal();
             }
         });
+
+        // إخفاء رسالة النجاح تلقائياً
+        const successAlert = document.getElementById('success-alert');
+        if (successAlert) {
+            setTimeout(() => {
+                // ابدأ في إخفاء العنصر تدريجياً
+                successAlert.style.opacity = '0';
+                // بعد انتهاء فترة التلاشي، قم بإزالته من العرض تماماً
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 500); // يجب أن تتطابق هذه المدة مع `duration-500`
+            }, 5000); // إخفاء الرسالة بعد 5 ثوانٍ
+        });
     });
     
     window.changePage = changePage;
+    window.searchTable = searchTable;
   </script>
 @endpush

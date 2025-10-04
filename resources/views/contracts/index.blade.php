@@ -8,7 +8,7 @@
 
 @section('content')
     @if(session('success'))
-        <div class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
+        <div id="success-alert" class="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-md shadow-sm" role="alert">
             <p>{{ session('success') }}</p>
         </div>
     @endif
@@ -123,6 +123,19 @@
 @endsection
 
 @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const successAlert = document.getElementById('success-alert');
+            if (successAlert) {
+                setTimeout(() => {
+                    successAlert.style.transition = 'opacity 0.5s ease';
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => successAlert.remove(), 500); // Remove after fade out
+                }, 5000); // 5 seconds
+            }
+        });
+    </script>
+
     {{-- Custom Tooltip Style --}}
     <style>
         html { color-scheme: light; }

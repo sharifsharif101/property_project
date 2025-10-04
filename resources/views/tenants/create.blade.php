@@ -1,13 +1,9 @@
  @extends('layouts.app')
 
 @push('styles')
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+ 
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f8f9fa;
-            direction: rtl;
-        }
+         
 
         .google-form-container {
             max-width: 800px;
@@ -259,15 +255,15 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">الاسم الأول <span class="required">*</span></label>
-                        <input type="text" name="first_name" class="form-control" required>
+                        <input type="text" name="first_name" class="form-control" value="{{ old('first_name') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">اسم الأب</label>
-                        <input type="text" name="father_name" class="form-control">
+                        <input type="text" name="father_name" class="form-control" value="{{ old('father_name') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">الاسم الأخير <span class="required">*</span></label>
-                        <input type="text" name="last_name" class="form-control" required>
+                        <input type="text" name="last_name" class="form-control" value="{{ old('last_name') }}" required>
                     </div>
                 </div>
             </div>
@@ -278,21 +274,21 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">رقم الهاتف <span class="required">*</span></label>
-                        <input type="text" name="phone" class="form-control" required>
+                        <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">رقم بديل</label>
-                        <input type="text" name="alternate_phone" class="form-control">
+                        <input type="text" name="alternate_phone" class="form-control" value="{{ old('alternate_phone') }}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">رقم الواتساب</label>
-                        <input type="text" name="whatsapp" class="form-control">
+                        <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">البريد الإلكتروني</label>
-                        <input type="email" name="email" class="form-control">
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}">
                     </div>
                 </div>
             </div>
@@ -304,25 +300,26 @@
                     <div class="form-group">
                         <label class="form-label">نوع الهوية</label>
                         <select name="id_type" class="form-control">
-                            <option value="national_card">بطاقة وطنية</option>
-                            <option value="passport">جواز سفر</option>
-                            <option value="residence">إقامة</option>
+                            <option value="national_card" {{ old('id_type') == 'national_card' ? 'selected' : '' }}>بطاقة وطنية</option>
+                            <option value="passport" {{ old('id_type') == 'passport' ? 'selected' : '' }}>جواز سفر</option>
+                            <option value="residence" {{ old('id_type') == 'residence' ? 'selected' : '' }}>إقامة</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">رقم الهوية <span class="required">*</span></label>
-                        <input type="text" name="id_number" class="form-control" required>
+                        <input type="text" name="id_number" class="form-control" value="{{ old('id_number') }}" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">تاريخ انتهاء الهوية</label>
-                        <input type="date" name="id_expiry_date" class="form-control">
+                        <input type="date" name="id_expiry_date" class="form-control" value="{{ old('id_expiry_date') }}">
                     </div>
                     <div class="form-group">
                         <div class="checkbox-container">
-                            <input type="checkbox" name="id_verified" id="id_verified" class="form-checkbox" value="1">
-                            <label for="id_verified" class="form-label">تم التحقق من الهوية</label>
+                            {{-- إذا كان الحقل موجوداً في old، سيكون checked. إذا لم يكن موجوداً ولكن القيمة الافتراضية هي 0، فلن يكون checked --}}
+                            <input type="checkbox" name="id_verified" id="id_verified" class="form-checkbox" value="1" {{ old('id_verified') == '1' ? 'checked' : '' }}>
+                            <label for="id_verified" class="form-label mb-0">تم التحقق من الهوية</label>
                         </div>
                     </div>
                 </div>
@@ -333,16 +330,16 @@
                 <h3 class="section-title">🏠 السكن والعمل</h3>
                 <div class="form-group">
                     <label class="form-label">عنوان السكن</label>
-                    <textarea name="address" class="form-control"></textarea>
+                    <textarea name="address" class="form-control">{{ old('address') }}</textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">جهة العمل</label>
-                        <input type="text" name="employer" class="form-control">
+                        <input type="text" name="employer" class="form-control" value="{{ old('employer') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">الدخل الشهري</label>
-                        <input type="number" step="0.01" name="monthly_income" class="form-control">
+                        <input type="number" step="0.01" name="monthly_income" class="form-control" value="{{ old('monthly_income') }}">
                     </div>
                 </div>
             </div>
@@ -354,8 +351,8 @@
                     <div class="form-group">
                         <label class="form-label">نوع المستأجر</label>
                         <select name="tenant_type" class="form-control">
-                            <option value="individual">فرد</option>
-                            <option value="company">شركة</option>
+                            <option value="individual" {{ old('tenant_type', 'individual') == 'individual' ? 'selected' : '' }}>فرد</option>
+                            <option value="company" {{ old('tenant_type') == 'company' ? 'selected' : '' }}>شركة</option>
                         </select>
                     </div>
                 </div>
@@ -376,7 +373,7 @@
             <div class="form-section">
                 <div class="form-group">
                     <label class="form-label">ملاحظات إضافية</label>
-                    <textarea name="notes" class="form-control"></textarea>
+                    <textarea name="notes" class="form-control">{{ old('notes') }}</textarea>
                 </div>
             </div>
 

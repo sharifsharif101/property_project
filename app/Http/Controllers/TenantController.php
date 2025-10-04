@@ -103,9 +103,11 @@ class TenantController extends Controller
             
             $image = $request->file('tenant_image');
             $imageName = 'tenant_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-            $imagePath = 'tenants/' . $imageName;
-            
-            $image->storeAs('tenants', $imageName, 'public');
+
+            // تخزين الصورة في public/uploads/tenants
+            $imagePath = $image->storeAs('tenants', $imageName, 'public_uploads');
+
+            // حفظ المسار النسبي
             $validated['image_path'] = $imagePath;
         }
 

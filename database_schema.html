@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+</head>
+<body>
+    <div class="mermaid">
+        erDiagram
+            Property ||--o{ Unit : has
+            Unit ||--o{ Contract : has
+            Tenant ||--o{ Contract : has
+            Contract ||--o{ ContractFile : has
+            Contract ||--o{ RentInstallment : has
+            Contract ||--o{ Payment : has
+            RentInstallment ||--o{ Payment : has
+
+            Property {
+                int property_id PK
+                string name
+                string type
+                string address
+                string description
+                string status
+            }
+
+            Unit {
+                int id PK
+                int property_id FK
+                string unit_number
+                int bedrooms
+                int bathrooms
+                float area
+                int floor_number
+                string status
+            }
+
+            Tenant {
+                int id PK
+                string first_name
+                string last_name
+                string father_name
+                string phone
+                string email
+            }
+
+            Contract {
+                int id PK
+                int tenant_id FK
+                int unit_id FK
+                int property_id FK
+                date start_date
+                date end_date
+                float rent_amount
+                string status
+            }
+
+            ContractFile {
+                int id PK
+                int contract_id FK
+                string original_file_name
+                string storage_path
+            }
+
+            RentInstallment {
+                int id PK
+                int contract_id FK
+                date due_date
+                float amount_due
+                string status
+            }
+
+            Payment {
+                int id PK
+                int rent_installment_id FK
+                int contract_id FK
+                date payment_date
+                float amount
+            }
+    </div>
+</body>
+</html>

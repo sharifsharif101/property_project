@@ -1,0 +1,31 @@
+name: Laravel Local Coder
+version: 1.0.0
+schema: v1
+
+models:
+  - name: DeepSeek-Coder 1.3B
+    provider: ollama
+    model: deepseek-coder:1.3b-instruct
+    roles: [chat, edit, summarize]
+    chatOptions:
+      baseSystemMessage: |
+        You are an expert Laravel developer. Always base your answers on the actual code in the user's project.
+        Use the provided context (migrations, models, controllers) to give accurate, specific answers.
+        If you don't know, say "I don't have enough context" — never hallucinate.
+
+context:
+  - provider: code
+  - provider: folder
+    params:
+      path: database/migrations
+  - provider: folder
+    params:
+      path: app/Models
+  - provider: terminal
+  - provider: problems
+
+# يمكنك إضافة StarCoder2 كخيار إضافي إذا أردت
+#  - name: StarCoder2-3B
+#    provider: ollama
+#    model: starcoder2:3b
+#    roles: [autocomplete]
