@@ -162,4 +162,18 @@ public function edit(Unit $unit)
         return redirect()->route('units.index')
             ->with('success', 'تم تحديث الوحدة بنجاح');
     }
+
+    public function destroy(Unit $unit)
+    {
+        // التحقق من وجود عقود مرتبطة بالوحدة
+        if ($unit->contracts()->exists()) {
+            return redirect()->route('units.index')
+                ->with('error', 'لا يمكن حذف الوحدة لوجود عقود مرتبطة بها.');
+        }
+
+        $unit->delete();
+
+        return redirect()->route('units.index')
+            ->with('success', 'تم حذف الوحدة بنجاح.');
+    }
 }

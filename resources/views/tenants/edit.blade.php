@@ -155,6 +155,7 @@
                                 <input id="tenant_image" name="tenant_image" type="file" class="sr-only" accept="image/*">
                             </label>
                         </div>
+                        <input type="hidden" name="remove_image" value="{{ old('remove_image', '0') }}" id="remove_image_hidden">
                     </div>
                     <!-- Notes -->
                     <div class="sm:col-span-2">
@@ -177,21 +178,15 @@
 
 @push('scripts')
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('tenant_image');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
     const removeImageBtn = document.getElementById('remove-image');
-    
-    let removeImageHiddenInput = document.querySelector('input[name="remove_image"]');
-    if (!removeImageHiddenInput) {
-        removeImageHiddenInput = document.createElement('input');
-        removeImageHiddenInput.type = 'hidden';
-        removeImageHiddenInput.name = 'remove_image';
-        document.querySelector('form').appendChild(removeImageHiddenInput);
-    }
-    removeImageHiddenInput.value = '0';
+    const removeImageHiddenInput = document.getElementById('remove_image_hidden');
 
+    // عند اختيار صورة جديدة
     imageInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file) {
@@ -199,19 +194,23 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
                 imagePreviewContainer.classList.remove('hidden');
-                removeImageHiddenInput.value = '0';
+                removeImageHiddenInput.value = '0'; // إعادة تعيين الحذف
             }
             reader.readAsDataURL(file);
         }
     });
 
+    // عند الضغط على زر "×"
     removeImageBtn.addEventListener('click', function() {
-        imageInput.value = ''; // Clear the file input
-        imagePreview.src = '';
-        imagePreviewContainer.classList.add('hidden');
-        removeImageHiddenInput.value = '1';
+        if (confirm('هل أنت متأكد من حذف الصورة من قاعدة البيانات؟')) {
+            imageInput.value = ''; // مسح اختيار الملف
+            imagePreview.src = ''; // إزالة المعاينة
+            imagePreviewContainer.classList.add('hidden'); // إخفاء العنصر
+            removeImageHiddenInput.value = '1';
+        }
     });
 });
+
 </script>
 @endpush
 @endsection

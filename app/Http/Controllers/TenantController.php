@@ -73,48 +73,52 @@ class TenantController extends Controller
     {
         return view('tenants.edit', compact('tenant'));
     }
+ public function update(Request $request, Tenant $tenant)
+{
+    $validated = $request->validate([
+        'first_name' => 'required|string|max:100',
+        'last_name' => 'required|string|max:100',
+        'father_name' => 'nullable|string|max:100',
+        'phone' => 'required|string',
+        'alternate_phone' => 'nullable|string',
+        'email' => 'nullable|email',
+        'whatsapp' => 'nullable|string',
+        'id_type' => 'required|in:national_card,passport,residence',
+        'id_number' => 'required|string|unique:tenants,id_number,' . $tenant->id,
+        'id_expiry_date' => 'nullable|date',
+        'id_verified' => 'boolean',
+        'address' => 'nullable|string',
+        'employer' => 'nullable|string',
+        'monthly_income' => 'nullable|numeric',
+        'notes' => 'nullable|string',
+        'tenant_type' => 'required|in:individual,company',
+        'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
 
-    public function update(Request $request, Tenant $tenant)
-    {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'father_name' => 'nullable|string|max:100',
-            'phone' => 'required|string',
-            'alternate_phone' => 'nullable|string',
-            'email' => 'nullable|email',
-            'whatsapp' => 'nullable|string',
-            'id_type' => 'required|in:national_card,passport,residence',
-            'id_number' => 'required|string|unique:tenants,id_number,' . $tenant->id,
-            'id_expiry_date' => 'nullable|date',
-            'id_verified' => 'boolean',
-            'address' => 'nullable|string',
-            'employer' => 'nullable|string',
-            'monthly_income' => 'nullable|numeric',
-            'notes' => 'nullable|string',
-            'tenant_type' => 'required|in:individual,company',
-            'tenant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
-
-        // رفع الصورة الجديدة
-        if ($request->hasFile('tenant_image')) {
-            // حذف الصورة القديمة
-            $tenant->deleteOldImage();
-            
-            $image = $request->file('tenant_image');
-            $imageName = 'tenant_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-
-            // تخزين الصورة في public/uploads/tenants
-            $imagePath = $image->storeAs('tenants', $imageName, 'public_uploads');
-
-            // حفظ المسار النسبي
-            $validated['image_path'] = $imagePath;
-        }
-
-        $tenant->update($validated);
-
-        return redirect()->route('tenants.index')->with('success', 'تم تحديث المستأجر بنجاح');
+    // إذا اختار المستخدم حذف الصورة القديمة
+    if ($request->input('remove_image') == '1') {
+        $tenant->deleteOldImage();
+        $validated['image_path'] = null; // حذف المسار من قاعدة البيانات
     }
+
+    // رفع صورة جديدة
+    if ($request->hasFile('tenant_image')) {
+        // حذف الصورة القديمة إذا موجودة
+        $tenant->deleteOldImage();
+
+        $image = $request->file('tenant_image');
+        $imageName = 'tenant_' . time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+
+        // تخزين الصورة
+        $imagePath = $image->storeAs('tenants', $imageName, 'public_uploads');
+
+        $validated['image_path'] = $imagePath;
+    }
+
+    $tenant->update($validated);
+
+    return redirect()->route('tenants.index')->with('success', 'تم تحديث المستأجر بنجاح');
+}
 
     public function destroy(Tenant $tenant)
     {

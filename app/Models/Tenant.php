@@ -57,12 +57,7 @@ class Tenant extends Model
     }
 
     // حذف الصورة القديمة
-    public function deleteOldImage()
-    {
-        if ($this->image_path && Storage::disk('public')->exists($this->image_path)) {
-            Storage::disk('public')->delete($this->image_path);
-        }
-    }
+ 
 
      public function getFullNameAttribute()
 {
@@ -72,5 +67,13 @@ class Tenant extends Model
         $this->last_name,
     ]));
 }
+
+public function deleteOldImage()
+{
+    if ($this->image_path && file_exists(public_path('uploads/' . $this->image_path))) {
+        unlink(public_path('uploads/' . $this->image_path));
+    }
+}
+
 
 }

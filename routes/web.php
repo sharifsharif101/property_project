@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:Super Admin|Property Manager'])->group(function () {
         Route::resource('properties', PropertyController::class);
         Route::get('/properties/{property}/units', [PropertyController::class, 'getUnits'])->name('properties.getUnits');
-        Route::resource('units', UnitController::class)->except(['destroy']);
+        Route::resource('units', UnitController::class);
         Route::patch('/units/{unit}/update-field', [UnitController::class, 'updateField'])->name('units.updateField');
         Route::post('/units/bulk-delete', [UnitController::class, 'bulkDelete'])->name('units.bulkDelete');
         Route::resource('tenants', TenantController::class);

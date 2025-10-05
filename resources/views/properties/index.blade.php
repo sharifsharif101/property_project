@@ -4,11 +4,7 @@
 @section('title', 'قائمة العقارات')
 
 @section('content')
-    {{-- Breadcrumbs (Optional, assuming you have it configured) --}}
-    <div class="mb-6">
-        {{-- Breadcrumbs::render('properties.index') --}}
-        <p class="text-sm text-gray-500">لوحة التحكم / العقارات</p>
-    </div>
+  
 
     {{-- Session Messages --}}
     @if (session('success'))
